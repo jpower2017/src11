@@ -224,7 +224,7 @@ class GiftsPartiesContainer extends Component {
       : gift.parties;
     const add = () => {
       console.log("add");
-      const objRequest = R.pick(["id", "name"], obj);
+      const objRequest = R.pick(["id", "name", "firstName", "lastName"], obj);
       newParties = [...tempParties, objRequest];
     };
     const remove = () => {

@@ -149,7 +149,9 @@ export const getGiftEvent = (jwt, id) => {
             sentiment,
             assignedTo,
             recipientPersons{
-              uuid
+              uuid,
+              firstName,
+              lastName
             },
             recipientGroups{
               uuid

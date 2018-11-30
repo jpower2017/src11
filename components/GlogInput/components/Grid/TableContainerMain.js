@@ -130,7 +130,7 @@ class TableContainer extends Component {
   render() {
     return (
       <div>
-        {this.props.rows ? (
+        {!this.props.loading ? (
           <Table
             columns={
               !this.props.submittable
@@ -348,7 +348,8 @@ const mapStateToProps = (state, ownProps) => ({
         clean2(state.glogInput.giftEventInstances),
         state.glogInput.mainFilter
       ).length
-    : null
+    : null,
+  loading: state.glogInput.loading
   //  mainFilter: state.glogInput.mainFilter ? state.glogInput.mainFilter : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({

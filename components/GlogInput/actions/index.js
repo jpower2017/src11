@@ -65,6 +65,7 @@ export const UPDATE_GIFTREQUESTGIFT = "UPDATE_GIFTREQUESTGIFT";
 export const GLOG_HIER2 = " GLOG_HIER2";
 export const GLOG_GROUP_HIERARCHY = " GLOG_GROUP_HIERARCHY";
 export const GLOG_HIERARCHY_REMOVE = "GLOG_HIERARCHY_REMOVE";
+export const GLOG_CHANGE_DELIVERY_LOC = "GLOG_CHANGE_DELIVERY_LOC";
 
 export const updateGRG = (x, payload) => async (dispatch, getState) => {
   console.log("ACTION updateGRG " + JSON.stringify(payload));
@@ -251,8 +252,10 @@ export const addLocation = (payload, node, addID = true) => async (
   let newItem = await HTTP_GLOG.createLocation(token, newPayload);
   let id;
   console.table(newItem.CreateLocation);
+  let createLocationUUID;
   if (!!newItem.CreateLocation) {
     id = R.prop("uuid", newItem.CreateLocation);
+    createLocationUUID = R.prop("uuid", newItem.CreateLocation);
   } else {
     console.log("if not newitem location ");
     console.table(payload);
@@ -280,6 +283,12 @@ export const addLocation = (payload, node, addID = true) => async (
     x => x.id == deliveryID,
     getState().glogInput.deliveries
   );
+  /* intl address will have no uuid in newpayload */
+  if (!R.prop("uuid", newPayload)) {
+    console.log("no uuid in newpayload for intl addy");
+    newPayload = { ...newPayload, uuid: createLocationUUID };
+    console.table(newPayload);
+  }
   const locationForDelivery = { ...objDelivery, location: newPayload };
   dispatch(add2(locationForDelivery, "deliveries", false));
   dispatch(add2(payload, node, addID));
@@ -518,47 +527,16 @@ export const hier2 = payload => ({
 
 export const getData = (filter = null) => async (dispatch, getState) => {
   console.log("GLOGINPUT  ACTION GETDATA");
+  let mainFilter;
   const token = getState().notifications.token;
+  mainFilter = filter ? filter : getState().glogInput.mainFilter;
   dispatch(setVar("loading", true));
   console.time("http-get-events");
-  const ge = await HTTP_GLOG.getGiftEvents(token, filter);
+  const ge = await HTTP_GLOG.getGiftEvents(token, mainFilter);
   console.timeEnd("http-get-events");
   dispatch(setVar("loading", false));
   //  console.table(ge.GiftEvents);
   dispatch(setRawAndGEI(ge.GiftEvents));
-
-  /*
-  let arrTemp = [];
-  const parseGroup = async strSearch => {
-    console.log("PARSE GROUP " + strSearch);
-    let result = await HTTP_GLOG.searchGroupTEST(token, strSearch);
-    result = result.SearchGroup[0];
-    console.table(result);
-    dispatch(hier2(result));
-    let temp = {
-      uuid: R.prop("uuid", result),
-      name: R.prop("name", result),
-      memberPersons: R.map(
-        x => R.prop("name", x.person),
-        R.prop("memberPersons", result)
-      ),
-      memberGroups: !!R.prop("memberGroups", result)
-        ? Promise.all(
-            R.map(
-              x => parseGroup(R.prop("name", x.group)),
-              R.prop("memberGroups", result)
-            )
-          )
-        : []
-    };
-
-    arrTemp.push(temp);
-    console.table(arrTemp);
-  };
-  */
-
-  /////const sg = await parseGroup("California Vendors");
-  ////console.log(JSON.stringify(sg));
 };
 
 const processOrgOrGroupHier = (data, groupType, isRoot) => {
@@ -1247,6 +1225,38 @@ export const updateSecondary = (
   }
   dispatch(updateSecondary2(payload, node));
 };
+/*
+export const changeDeliveryLoc2 = payload => ({
+  type: GLOG_CHANGE_DELIVERY_LOC,
+  payload: payload
+});
+*/
+export const changeDeliveryLoc = id => async (dispatch, getState) => {
+  console.log("ACTION changeDeliveryLoc place id " + id);
+  const token = getState().notifications.token;
+  const placeID = id;
+  const deliveries = getState().glogInput.deliveries;
+  const newDeliveryRow = R.find(
+    x => R.path(["location", "uuid"], x) == placeID,
+    deliveries
+  );
+  console.log(newDeliveryRow);
+  const deliveryID = R.prop("id", newDeliveryRow);
+  let giftID = getState().glogInput.searchID;
+  let giftObj = R.find(x => x.id === giftID, getState().glogInput.gifts);
+
+  let newObj = { ...giftObj, delivery: deliveryID };
+  console.log(newObj);
+
+  let oldUUID = R.prop("delivery", giftObj);
+  const oldDeliveryRow = R.find(x => x.id == oldUUID, deliveries);
+  const oldDeliveryPlaceID = R.path(["location", "uuid"], oldDeliveryRow);
+  console.log("oldDeliveryPlaceID " + oldDeliveryPlaceID);
+
+  dispatch(update(newObj, "gifts"));
+  await HTTP_GLOG.removeGiftLocation(token, giftID, oldDeliveryPlaceID);
+  await HTTP_GLOG.createGiftLocation(token, giftID, placeID, {});
+};
 /* queryGiftEvent start...*/
 export const queryGiftEvent = id => async (dispatch, getState) => {
   console.log("ACTION queryGiftEvent id : " + id);
@@ -1528,13 +1538,6 @@ export const queryGiftEvent = id => async (dispatch, getState) => {
     };
     console.table(addRequestData(newObj, giftsWithRequestData));
     console.table(addGiftParties(addRequestData(newObj, giftsWithRequestData)));
-
-    /*   TOOOOODOO  ATTACH TO GIFT ON TUES */
-    /*
-    dispatch(
-      add2(addRequestData(newObj, giftsWithRequestData), "gifts", false)
-    );
-    */
     dispatch(
       add2(
         addGiftParties(addRequestData(newObj, giftsWithRequestData)),
@@ -1547,7 +1550,7 @@ export const queryGiftEvent = id => async (dispatch, getState) => {
   console.table(allGifts);
   R.map(x => addToTables(x), allGifts);
 };
-/* queryGiftEvent end*/
+/* END queryGiftEvent  */
 
 export const rowSubmit = (id, fileId = null) => ({
   type: GLOG_SUBMIT_ROW,

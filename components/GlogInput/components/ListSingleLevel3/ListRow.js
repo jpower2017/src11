@@ -34,6 +34,10 @@ export default class ListRow extends React.Component {
     console.table(this.props.label);
     this.setState({ expand: false });
   }
+  componentWillUnmount() {
+    console.log("COMPONENT WILL UNMOUNT LISTROW");
+    this.setState({ expand: false });
+  }
   componentWillReceiveProps(nextProps) {
     //  console.log("Row componentWillReceiveProps " + JSON.stringify(nextProps));
   }

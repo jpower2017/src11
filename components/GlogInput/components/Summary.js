@@ -43,7 +43,7 @@ class Summary extends Component {
           labelColor={"#fff"}
           style={{ marginTop: "15px", marginRight: "20px" }}
           onClick={this.props.onDialog}
-          disabled={this.props.loading}
+          //disabled={this.props.loading}
         />
 
         <hr />
@@ -126,6 +126,7 @@ class Summary extends Component {
                 bDelete={true}
                 secondaryText1={"parties"}
                 secondaryText2={"requests"}
+                secondaryText3={"value"}
               />
             </div>
           </div>

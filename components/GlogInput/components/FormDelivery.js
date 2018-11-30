@@ -97,7 +97,13 @@ class FormDelivery extends Component {
     this.props.onSave({ ...this.props.data, [name]: val });
     this.setState({ saveEnabled: true });
   };
+  changeDeliveryLoc = id => {
+    console.log("FormDelivery changeDeliveryLoc id   " + id);
+    this.setState({ data: { ...this.props.gift, location: id } });
+    this.props.changeDeliveryLoc(id);
+  };
   changeGiftLocation = (val, name) => {
+    console.log("FormDelivery changeGiftLocation " + [val, name]);
     this.setState({ data: { ...this.props.gift, [name]: val } });
     this.props.onSaveGiftLocation({ ...this.props.gift, [name]: val });
     this.setState({ saveEnabled: true });
@@ -118,15 +124,27 @@ class FormDelivery extends Component {
   };
   getLocations = data => {
     console.table(data);
+    console.table(this.props.deliveryAddresses);
+    let addresses = this.props.deliveryAddresses;
+    return addresses;
+
+    const createAddress = obj => {
+      return {
+        name: obj.placeID,
+        title: obj.streetAddress1,
+        value: obj.id
+      };
+    };
+    return R.map(createAddress, addresses);
+    /*
     if (!data.location) {
       console.log("not data.location");
       return;
     }
     let arrLoc = R.path(["location", "formattedAddress"], data);
-
     const loc = `${arrLoc[0]}, ${arrLoc[1]}, ${arrLoc[2]}`;
-
     return [{ name: "location1", title: loc, value: 0 }];
+    */
   };
 
   render() {
@@ -142,8 +160,8 @@ class FormDelivery extends Component {
                     ? this.getLocations(data)
                     : this.state.street
                 }
-                status={0}
-                onselect={value => this.changeGiftLocation(value, "location")}
+                status={data.location ? data.location.uuid : null}
+                onselect={value => this.changeDeliveryLoc(value)}
               />
             </div>
 

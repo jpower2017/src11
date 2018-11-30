@@ -123,6 +123,7 @@ class SummaryContainer extends Component {
   onDialog() {
     this.props.setVar("loading", true);
     //  this.props.setFilter(0, "mainFilter");
+    this.props.getData(null);
     this.props.onDialog();
   }
   render() {
@@ -311,13 +312,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   setVar: (name, payload) => {
     dispatch(setVar(name, payload));
+  },
+  getData: mo => {
+    console.log("getData SC  ");
+    dispatch(getData(mo));
   }
-  /*
-  setFilter: (str, variable) => {
-    console.log("setFilter SC  " + [str, variable]);
-    dispatch(setFilter(str, variable));
-  }
-  */
 });
 
 const SummaryContainer2 = connect(

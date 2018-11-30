@@ -146,26 +146,6 @@ const ListWidget = props => {
 
     //return R.map(x => x.name, obj[field1]);
   };
-  const getRecipPersons = arr => {
-    console.table(arr);
-    if (!arr) {
-      return;
-    }
-    let str = "";
-    const f = obj => {
-      if (obj && R.prop("name", obj)) {
-        console.log("here name");
-        str += `${obj.name} `;
-      } else if (obj && R.prop("firstName", obj)) {
-        console.log("here firstname");
-        str += `${obj.firstName} ${obj.lastName} `;
-      }
-    };
-
-    R.map(f, arr);
-    console.log("str " + str);
-    return str;
-  };
   return (
     <div style={{ padding: "10px" }}>
       <Paper
@@ -210,31 +190,15 @@ const ListWidget = props => {
                   item[primaryText] ? (
                     <p>
                       {item[primaryText]}
-                      {props.title == "Gift history" && (
-                        <span>
-                          <br />
-                          <span
-                            style={{
-                              color: "#2C3673"
-                            }}
-                          >
-                            Value:
-                            {item[secondaryText3]}
-                          </span>
-                        </span>
-                      )}
-                      {props.title == "Gift history" && (
-                        <span>
-                          <br />
-                          <span
-                            style={{
-                              color: "#2C3673"
-                            }}
-                          >
-                            {getRecipPersons(item["recipientPersons"])}
-                          </span>
-                        </span>
-                      )}
+                      <br />
+                      <span
+                        style={{
+                          color: "#990000",
+                          marginTop: "10px"
+                        }}
+                      >
+                        Here and here
+                      </span>
                     </p>
                   ) : (
                     `${item["firstName"]} ${item["lastName"]}`
@@ -245,9 +209,14 @@ const ListWidget = props => {
                   item[secondaryText2]
                 )}
                 secondaryTextLines={2}
-                style={(getUrgentColor(item.urgent), { fontSize: "large" })}
+                style={
+                  (getUrgentColor(item.urgent),
+                  { fontSize: "large", fontWeight: "lighter" })
+                }
                 innerDivStyle={{
-                  lineHeight: "1.2"
+                  color: "#009900",
+                  marginTop: "20px",
+                  lineHeight: "1.6"
                 }}
               />
               <Divider style={{ height: "1.5px" }} />

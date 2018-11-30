@@ -10,6 +10,7 @@ export default class FieldDropDown extends Component {
       options: this.props.options
       //  status: this.props.status
     };
+    //console.log("this.status " + this.status);
   }
   /*
   componentDidMount() {

@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
-import { updateSecondary, onTypeGift, addLocation } from "../actions";
+import {
+  updateSecondary,
+  onTypeGift,
+  addLocation,
+  changeDeliveryLoc
+} from "../actions";
 import FormDelivery from "./FormDelivery";
 import { appLogic } from "../common/data";
 
@@ -26,6 +31,7 @@ class FormContainer extends Component {
           onAdd={this.props.onAdd}
           gift={this.props.gift}
           deliveryAddresses={this.props.deliveryAddresses}
+          changeDeliveryLoc={this.props.changeDeliveryLoc}
         />
       </div>
     );
@@ -81,29 +87,34 @@ const getLocations = (obj, locations, gifts) => {
   }
   return locs;
 };
-const getDeliveries = (obj, locations, gifts) => {
+const getDeliveries = (obj, deliveries, gifts) => {
   console.log("getetDeliveries");
   const arrGifts = R.map(x => x.id, obj.giftHistory);
   const filteredGifts = R.filter(x => R.contains(x.id, arrGifts), gifts);
   console.table(filteredGifts);
+  //let counter = 0;
   const getLocs = gift => {
-    let counter = 0;
     const deliv = R.prop("delivery", gift);
     if (!deliv) {
       return;
     }
-    const loc = R.prop("location", deliv);
-    if (!loc) {
-      return;
-    }
-    const addy = R.prop("formattedAddress", loc);
+    const addy = R.path(
+      ["location", "formattedAddress"],
+      R.find(x => x.id == deliv, deliveries)
+    );
     if (!addy) {
       return;
     }
-
-    return { name: addy[0], title: addy[0], value: counter++ };
+    const placeID = R.path(
+      ["location", "uuid"],
+      R.find(x => x.id == deliv, deliveries)
+    );
+    return { name: addy[0], title: addy[0], value: placeID };
   };
   let locs = R.map(x => getLocs(x), filteredGifts);
+
+  console.table(locs);
+  locs = R.uniq(R.filter(x => x, locs));
   console.table(locs);
   if (!locs[0]) {
     return;
@@ -144,7 +155,7 @@ const mapStateToProps = (state, ownProps) => ({
       x => x.id == state.glogInput.selectedRow,
       state.glogInput.giftEventInstances
     ),
-    state.glogInput.locations,
+    state.glogInput.deliveries,
     state.glogInput.gifts
   )
 
@@ -162,6 +173,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   onAdd: (payload, node, bool) => {
     dispatch(addLocation(payload, node, bool));
+  },
+  changeDeliveryLoc: id => {
+    dispatch(changeDeliveryLoc(id));
   }
 });
 

@@ -83,7 +83,9 @@ class Main extends Component {
           autoScrollBodyContent
           contentStyle={{
             width: "90%",
-            maxWidth: "none"
+            maxWidth: "none",
+            position: "absolute",
+            top: "20px"
           }}
         >
           {this.renderContainer()}
