@@ -72,9 +72,13 @@ export default class Row extends React.Component {
     const ks = R.keys(objData);
     return R.map(
       x =>
-        R.contains(x, ["eventType", "date", "recipients", "registry"]) && (
-          <Cell data={objData[x]} />
-        ),
+        R.contains(x, [
+          "eventType",
+          "date",
+          "recipients",
+          "registry",
+          "recurring"
+        ]) && <Cell data={objData[x]} />,
       ks
     );
   };

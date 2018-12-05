@@ -275,6 +275,7 @@ recipients: obj.eventPersons
   : [""],
   */
 const clean2 = geis => {
+  console.table(geis);
   const combineRecips = (persons, animals, evtOrgs, evtGroups) => {
     let peps = [""];
     let anims = [""];
@@ -296,7 +297,7 @@ const clean2 = geis => {
   };
   const newObj = obj => {
     return {
-      ...obj,
+      ...R.omit(["recurring"], obj),
       id: obj.uuid ? obj.uuid : obj.id,
       date: `${obj.eventMonth}/${obj.eventDay}`,
       recipients: combineRecips(
@@ -312,9 +313,12 @@ const clean2 = geis => {
             obj.eventGroups
           )
         : [""],
-      registry: obj.registryStatus
+      registry: obj.registryStatus,
+      recurring: obj.recurring[0] ? "True" : "False"
     };
   };
+  const temp = R.map(x => newObj(x), geis);
+  console.table(temp);
   return R.map(x => newObj(x), geis);
 };
 

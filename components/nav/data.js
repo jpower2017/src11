@@ -93,6 +93,16 @@ export const data1 = [
     favorite: false,
     endpoint: "/irisCalendar",
     allow: "Iris PA"
+  },
+  {
+    id: 17,
+    name: "Gift log",
+    level: 1,
+    show: true,
+    leaf: true,
+    favorite: false,
+    endpoint: "/giftLog",
+    allow: "Gift Log TEMP"
   }
 ];
 

@@ -60,7 +60,13 @@ class GridContainer extends Component {
       <div>
         {this.props.allowed ? (
           <Grid
-            columns={["Date", "Category", "Debit", "Credit", "Amount"]}
+            columns={[
+              "Date",
+              "Category",
+              "Intacct Debit",
+              "Intacct Credit",
+              "Addepar Amount"
+            ]}
             selectedAccountID={this.props.selectedAccountID}
             selectedAccountName={this.props.selectedAccountName}
             data={tempDataSubmissions}

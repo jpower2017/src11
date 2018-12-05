@@ -76,9 +76,20 @@ const getLocations = (obj, locations, gifts) => {
     const addy = R.prop("formattedAddress", loc);
     if (!addy) {
       return;
+    } else {
+      console.table(addy);
     }
-
-    return { name: addy[0], title: addy[0], value: counter++ };
+    const createStrAddy = arrAddy => {
+      let newArr = arrAddy;
+      newArr = R.filter(x => x, arrAddy);
+      newArr = R.map(x => `${x} `, arrAddy);
+      return newArr.toString();
+    };
+    return {
+      name: addy[0],
+      title: createStrAddy(addy),
+      value: counter++
+    };
   };
   let locs = R.map(x => getLocs(x), filteredGifts);
   console.table(locs);
@@ -109,7 +120,17 @@ const getDeliveries = (obj, deliveries, gifts) => {
       ["location", "uuid"],
       R.find(x => x.id == deliv, deliveries)
     );
-    return { name: addy[0], title: addy[0], value: placeID };
+    const createStrAddy = arrAddy => {
+      let newArr = arrAddy;
+      newArr = R.filter(x => x, arrAddy);
+      newArr = R.map(x => ` ${x}`, arrAddy);
+      return newArr.toString();
+    };
+    return {
+      name: addy[0],
+      title: createStrAddy(addy),
+      value: placeID
+    };
   };
   let locs = R.map(x => getLocs(x), filteredGifts);
 

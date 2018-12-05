@@ -93,7 +93,8 @@ export default class Row extends React.Component {
             justifyContent: "space-evenly",
             //flexWrap: "wrap",
             backgroundColor: getBackgroundColor(),
-            fontSize: "large"
+            fontSize: "large",
+            cursor: "pointer"
           }}
           onMouseOver={rollOver}
           onMouseOut={rollOut}

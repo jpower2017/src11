@@ -21,6 +21,7 @@ import GlogInput from "./GlogInput/components/Main";
 import QuickAccess from "./QuickAccess/FormContainer";
 import IrisCalendar from "./IrisCalendar/DatePickerContainer.js";
 import Add2Intact from "./Add2Intact/A2I";
+import GiftLog from "./GiftLog/components/Main";
 
 class MainPage extends Component {
   constructor(props) {
@@ -56,6 +57,7 @@ class MainPage extends Component {
           <Route path="/workflow/cc" component={CC} />
           <Route path="/glogInput" component={GlogInput} />
           <Route path="/irisCalendar" component={IrisCalendar} />
+          <Route path="/giftLog" component={GiftLog} />
           <Route
             path="/workflow/dashboard"
             render={() => (

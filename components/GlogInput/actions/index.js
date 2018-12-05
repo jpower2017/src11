@@ -1251,11 +1251,20 @@ export const changeDeliveryLoc = id => async (dispatch, getState) => {
   let oldUUID = R.prop("delivery", giftObj);
   const oldDeliveryRow = R.find(x => x.id == oldUUID, deliveries);
   const oldDeliveryPlaceID = R.path(["location", "uuid"], oldDeliveryRow);
+  console.table(oldDeliveryRow);
+
+  oldDeliveryRow.location = newDeliveryRow.location;
+  console.table(oldDeliveryRow);
+
   console.log("oldDeliveryPlaceID " + oldDeliveryPlaceID);
 
-  dispatch(update(newObj, "gifts"));
+  //dispatch(update(newObj, "gifts"));
+  //change Delivery Row location
+
   await HTTP_GLOG.removeGiftLocation(token, giftID, oldDeliveryPlaceID);
-  await HTTP_GLOG.createGiftLocation(token, giftID, placeID, {});
+  /* pass the delivery form data  */
+  const deliveryHTTP = R.omit(["uuid", "location", "id"], oldDeliveryRow);
+  await HTTP_GLOG.createGiftLocation(token, giftID, placeID, deliveryHTTP);
 };
 /* queryGiftEvent start...*/
 export const queryGiftEvent = id => async (dispatch, getState) => {

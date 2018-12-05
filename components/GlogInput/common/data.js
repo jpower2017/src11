@@ -33,7 +33,8 @@ export const columnsGiftEventInstance = [
   { name: "eventType", title: "EVENT", type: "string", order: 1 },
   { name: "date", title: "DATE", type: "string", order: 2 },
   { name: "recipients", title: "RECIPIENTS", type: "string", order: 3 },
-  { name: "registry", title: "REGISTRY STATUS", type: "string", order: 4 }
+  { name: "registry", title: "REGISTRY STATUS", type: "string", order: 4 },
+  { name: "recurring", title: "RECURRING", type: "string", order: 5 }
 ];
 
 export const columnsPerson = [
