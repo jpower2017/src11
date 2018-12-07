@@ -9,8 +9,10 @@ class Summary extends Component {
   componentDidMount() {}
 
   render() {
+    const { title } = this.props;
     return (
-      <div style={{ display: "flex" }}>
+      <div>
+        <div style={{ fontWeight: "bold" }}>{title}</div>
         <div>SummaryComp</div>
       </div>
     );

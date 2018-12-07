@@ -1558,6 +1558,26 @@ export const removeGiftEventOrganization = (
   });
   return apolloFetch({ query, variables }).then(res => res.data);
 };
+export const removeGiftEventGroup = (jwt, giftEventUUID, groupUUID) => {
+  console.log("HTTP removeGiftEventGroup");
+  const query = `
+       mutation removeGiftEventGroup($giftEventUUID:String,$groupUUID:String) {
+        RemoveGiftEventGroup(giftEventUUID:$giftEventUUID,groupUUID:$groupUUID)  }`;
+  const variables = {
+    giftEventUUID: giftEventUUID,
+    groupUUID: groupUUID
+  };
+  const apolloFetch = createApolloFetch({ uri });
+  apolloFetch.use(({ request, options }, next) => {
+    if (!options.headers) {
+      options.headers = {}; // Create the headers object if needed.
+    }
+    options.headers["x-auth-jwt"] = jwt;
+    options.credentials = "include";
+    next();
+  });
+  return apolloFetch({ query, variables }).then(res => res.data);
+};
 //removeGiftEventGiftRequest
 export const removeGiftEventGiftRequest = (
   jwt,

@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import FormContainerRequest from "./Form/FormContainerRequest";
+import GeneologyPeopleList from "./List/PeopleListContainer";
+import RequestsList from "./List/RequestsListContainer";
 
 class GiftRequests extends Component {
   constructor(props) {
@@ -9,9 +12,20 @@ class GiftRequests extends Component {
   componentDidMount() {}
 
   render() {
+    const { title } = this.props;
     return (
-      <div style={{ display: "flex" }}>
+      <div>
+        <div style={{ fontWeight: "bold" }}>{title}</div>
         <div>GiftRequestsComp</div>
+        <div style={{ display: "flex" }}>
+          <FormContainerRequest />
+          <div style={{ padding: "10px" }}>
+            <RequestsList />
+          </div>{" "}
+          <div style={{ padding: "10px" }}>
+            <GeneologyPeopleList />
+          </div>
+        </div>
       </div>
     );
   }

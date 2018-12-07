@@ -955,6 +955,12 @@ export const ondelete = id => async (dispatch, getState) => {
         selectedRow,
         id
       );
+    } else if (geiType === "groups") {
+      const removeGiftEventGroup = await HTTP_GLOG.removeGiftEventGroup(
+        token,
+        selectedRow,
+        id
+      );
     }
   }
 };

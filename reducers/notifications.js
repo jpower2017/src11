@@ -27,6 +27,7 @@ import { presence } from "../components/InOffice/reducers";
 import { glogInput } from "../components/GlogInput/reducers";
 import { irisCalendar } from "../components/IrisCalendar/reducers";
 import { addepar2intact } from "../components/Add2Intact/reducers";
+import { giftLog } from "../components/GiftLog/reducers";
 
 /* ROD hack  TEMPORARY */
 /*
@@ -148,7 +149,8 @@ const rootReducer = combineReducers({
   presence,
   glogInput,
   irisCalendar,
-  addepar2intact
+  addepar2intact,
+  giftLog
 });
 export default rootReducer;
 //export default notifications;

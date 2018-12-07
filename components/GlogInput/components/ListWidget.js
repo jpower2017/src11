@@ -20,6 +20,7 @@ import PageView from "material-ui/svg-icons/action/pageview";
 import HighLightOff from "material-ui/svg-icons/action/highlight-off";
 import CircleAdd from "material-ui/svg-icons/image/control-point";
 import Edit from "material-ui/svg-icons/image/edit";
+import { formatCurrency } from "../utils/utils";
 import * as R from "ramda";
 
 const ListWidget = props => {
@@ -219,7 +220,7 @@ const ListWidget = props => {
                             }}
                           >
                             Value:
-                            {item[secondaryText3]}
+                            {formatCurrency(item[secondaryText3])}
                           </span>
                         </span>
                       )}
