@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
 import List from "./List";
-//import {} from "../actions";
+import { setVar, deleteRequest } from "../../actions";
+import { getRequests } from "../../reducers";
 
 class RequestsListContainer extends Component {
   constructor(props) {
@@ -17,7 +18,13 @@ class RequestsListContainer extends Component {
       <div>
         <div style={{ fontWeight: "bold" }}>{title}</div>
         {this.props.rows ? (
-          <List data={this.props.rows} title="Gift requests" />
+          <List
+            data={this.props.rows}
+            title="Gift requests"
+            onselect={this.props.setVar}
+            deleteable={true}
+            onDelete={this.props.delete}
+          />
         ) : (
           <div>No gift requests yet.</div>
         )}
@@ -27,16 +34,21 @@ class RequestsListContainer extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  rows: state.giftLog.requests ? state.giftLog.requests : null
+  rows: getRequests(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
+  setVar: (field, val) => {
+    console.table(val);
+    dispatch(setVar("currentGiftRequest", R.prop("uuid", val)));
+  },
+  delete: id => {
+    console.log("RequestsListContainer id " + id);
+    dispatch(deleteRequest(id));
+  }
   /*
   searchPerson: str => {
     dispatch(searchPerson(str));
   },
-  sendData: () => {
-    dispatch(sendData());
-  }
   */
 });
 

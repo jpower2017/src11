@@ -154,13 +154,16 @@ export const getGiftEvent = (jwt, id) => {
               lastName
             },
             recipientGroups{
-              uuid
+              uuid,
+              name
             },
             recipientOrganizations{
-              uuid
+              uuid,
+              name
             },
             recipientAnimals{
-              uuid
+              uuid,
+              name
             },
             delivery{
               uuid
@@ -1034,6 +1037,13 @@ export const searchOrganization = (jwt, str) => {
           lastName
         }
       },
+      ownerPersons{
+        person{
+          uuid,
+          firstName,
+          lastName
+        }
+      },
       memberGroups{
         group{
           uuid,
@@ -1082,6 +1092,13 @@ export const searchOrgTEST = (jwt, str) => {
       name,
       employees{
         title,
+        person{
+          uuid,
+          firstName,
+          lastName
+        }
+      },
+      ownerPersons{
         person{
           uuid,
           firstName,

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import TableGiftEventsContainer from "./TableGiftEventsContainer";
 
 class ListView extends Component {
   constructor(props) {
     super(props);
-    this.state = { screen: 1 };
   }
   componentDidMount() {}
 
@@ -13,7 +13,10 @@ class ListView extends Component {
     return (
       <div>
         <div style={{ fontWeight: "bold" }}>{title}</div>
-        <div>ListView Comp</div>
+        <TableGiftEventsContainer
+          onNew={() => this.props.onNew()}
+          onEdit={() => this.props.onEdit()}
+        />
       </div>
     );
   }

@@ -19,7 +19,7 @@ class HeaderCell extends Component {
       <div
         className="pointer"
         style={{
-          width: "8%",
+          //width: "20%",
           display: "flex"
           //borderBottom: "5px solid #607D8B"
           //border: "2px solid red"

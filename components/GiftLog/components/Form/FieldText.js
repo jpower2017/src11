@@ -6,8 +6,10 @@ import {
   isNumber,
   emailPattern,
   dateFormat,
+  dateFormatMMDD,
   formatPhone,
   formatDate,
+  formatDateMMDD,
   formatCurrency
 } from "../../utils/utils";
 
@@ -37,6 +39,8 @@ class FieldText extends Component {
         return formatPhone(value);
       case "date":
         return formatDate(value);
+      case "dateMMDD":
+        return formatDateMMDD(value);
       case "currency":
         return formatCurrency(value);
       default:
@@ -57,6 +61,8 @@ class FieldText extends Component {
         break;
       case "date":
         return !dateFormat.test(value);
+      case "dateMMDD":
+        return !dateFormatMMDD(value);
       case "gender":
         return !R.contains(value, ["M", "m", "Male", "F", "f", "Female"]);
       case "status":
@@ -98,7 +104,7 @@ class FieldText extends Component {
           rows={this.props.multiLine ? 2 : 1}
           onChange={this.handleChange}
           name={obj.name}
-          style={{ width: "350px", fontSize: "20px" }}
+          style={{ width: "350px", fontSize: "20px", marginLeft: "2px" }}
           floatingLabelStyle={{ color: "#DF5C33" }}
         />
       </div>

@@ -38,6 +38,14 @@ export const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 //export const dateFormat = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{2}$/;
 export const dateFormat = /^(?:(?:(?:0?[13578]|1[02])(\/|-|\.)31)\1|(?:(?:0?[1,3-9]|1[0-2])(\/|-|\.)(?:29|30)\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:0?2(\/|-|\.)29\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:(?:0?[1-9])|(?:1[0-2]))(\/|-|\.)(?:0?[1-9]|1\d|2[0-8])\4(?:(?:1[6-9]|[2-9]\d)?\d{4})$/;
 
+export const dateFormatMMDD = str => {
+  console.log("dateFormatMMDD str: " + str);
+  if (str.length == 5) {
+    return true;
+  } else {
+    return false;
+  }
+};
 export const capitalizeFirstLtr = string =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
@@ -80,6 +88,20 @@ export const formatDate = input => {
     return `/${str.substr(4)}`;
   };
   return getFirstPart(str) + getSecondPart(str) + getThirdPart(str);
+};
+export const formatDateMMDD = input => {
+  let str = input.replace(/[^\d]/g, "");
+  const getFirstPart = str => {
+    return `${str.substr(0, 2)}`;
+  };
+  const getSecondPart = str => {
+    if (str.length < 2) {
+      return "";
+    }
+    return `/${str.substr(2, 2)}`;
+  };
+
+  return getFirstPart(str) + getSecondPart(str);
 };
 
 export const formatCurrency = input => {

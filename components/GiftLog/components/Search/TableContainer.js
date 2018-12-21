@@ -9,8 +9,8 @@ import { connect } from "react-redux";
   addToNode
 } from "../../actions";*/
 //import { getRows, getSelection } from "../../reducers";
-import Table from "./Table/Table";
-import { columnsPerson } from "../common/data";
+import Table from "../Table/Table";
+import { columnsPerson } from "../../common/data";
 
 class TableContainer extends Component {
   constructor(props) {

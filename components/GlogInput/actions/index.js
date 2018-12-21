@@ -579,6 +579,10 @@ const processOrgOrGroupHier = (data, groupType, isRoot) => {
   const arrPersons = data.employees ? data.employees : data.memberPersons;
   R.map(x => processGroup(x.group), data.memberGroups);
   R.map(x => processPerson(x.person), arrPersons);
+  if (data.ownerPersons) {
+    console.log("yes ownerPersons");
+    R.map(x => processPerson(x.person), data.ownerPersons);
+  }
   console.table(rowData);
   return rowData;
 };
@@ -622,6 +626,10 @@ export const onGroupSelect = id => async (dispatch, getState) => {
     result = result.SearchOrganization[0];
     result = { ...result, id: result.uuid };
     console.table(result);
+    const tempOrg = groupHierarchy(
+      processOrgOrGroupHier(result, "org", isRoot)
+    );
+    console.table(tempOrg);
     dispatch(groupHierarchy(processOrgOrGroupHier(result, "org", isRoot)));
   } else if (typ == "groups" || typ == "group") {
     result = await HTTP_GLOG.searchGroupTEST(token, strSearch);
@@ -688,8 +696,9 @@ export const updateGiftInstance = payload => async (dispatch, getState) => {
     registryStatus: convertStatus(payload.registryStatus),
     active: payload.active == 1 ? true : false,
     recurring:
-      payload.recurring == 1 || payload.recurring == true ? true : false
+      payload.recurring[0] == 1 || payload.recurring[0] == true ? true : false
   };
+  console.table(newPayload);
   newPayload = R.pick(
     [
       "active",
@@ -1633,7 +1642,7 @@ export const searchOrganization = (str = "") => async (dispatch, getState) => {
   const token = getState().notifications.token;
   let newSearch = await HTTP_GLOG.searchOrganization(token, str);
   let orgs = R.map(x => changeLabel(x), newSearch.SearchOrganization);
-  orgs = filterBeginsWith(str, orgs, "name");
+  //  orgs = filterBeginsWith(str, orgs, "name");
   dispatch(searchText(orgs));
 };
 export const searchPerson = (str = "") => async (dispatch, getState) => {
@@ -1687,7 +1696,7 @@ export const searchGroup = (str = "") => async (dispatch, getState) => {
   const token = getState().notifications.token;
   let newSearch = await HTTP_GLOG.searchGroup(token, str);
   let groups = R.map(x => changeLabel(x), newSearch.SearchGroup);
-  groups = filterBeginsWith(str, groups, "name");
+  //groups = filterBeginsWith(str, groups, "name");
   dispatch(searchText(groups));
 };
 export const searchAnimal = (str = "") => async (dispatch, getState) => {
@@ -1695,7 +1704,7 @@ export const searchAnimal = (str = "") => async (dispatch, getState) => {
   const token = getState().notifications.token;
   let newSearch = await HTTP_GLOG.searchAnimal(token, str);
   let animals = R.map(x => changeLabel(x), newSearch.SearchAnimal);
-  animals = filterBeginsWith(str, animals, "name");
+  //animals = filterBeginsWith(str, animals, "name");
   dispatch(searchText(animals));
 };
 export const searchNode = (str = "") => async (dispatch, getState) => {

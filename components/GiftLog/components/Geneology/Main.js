@@ -1,20 +1,18 @@
 import React, { Component } from "react";
 import * as R from "ramda";
 import List from "./List";
-import RequestGeneologyList from "./RequestGeneologyList";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 //import { data } from "./data.js";
 import Row from "./Row";
 
-/*  state.data = geneology, state.selected data for gift requests.persons */
+/*  state.data = geneology,  */
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: this.props.data,
-      main: 1,
-      selectedData: []
+      main: 1
     };
     console.table(this.props.data);
   }
@@ -89,33 +87,7 @@ class App extends Component {
     }
     relation == "main" && this.setState({ main: obj.id });
   };
-  createRequestList = () => {
-    const id = this.state.main;
-    /* create list of all for selected person */
-    let list = [];
-    R.map(
-      x => list.push({ ...x, relation: "parent" }),
-      this.getOthers("parents")
-    );
-    list.push({
-      ...this.getMain(id, this.state.data)[0],
-      relation: "main"
-    });
-    list.push({
-      ...this.getOthers("partners")[0],
-      relation: "partner"
-    });
-    R.map(
-      x => list.push({ ...x, relation: "sib" }),
-      this.getOthers("siblings")
-    );
-    R.map(
-      x => list.push({ ...x, relation: "child" }),
-      this.getOthers("children")
-    );
-    list = R.filter(x => x.id, list);
-    this.setState({ selectedData: list });
-  };
+
   render() {
     return (
       <div>
@@ -160,19 +132,6 @@ class App extends Component {
             title="Siblings"
           />
         </div>
-        <hr style={{ borderTop: "5px solid lightblue" }} />
-        <RaisedButton
-          label="create gift request recip list"
-          backgroundColor="#000099"
-          labelColor="#fff"
-          onClick={() => this.createRequestList()}
-        />
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <div>New-request form </div>
-          <div>Request list</div>
-          <RequestGeneologyList data={this.state.selectedData} />
-        </div>
-        <hr style={{ borderTop: "5px solid lightblue" }} />
       </div>
     );
   }

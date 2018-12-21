@@ -6,7 +6,7 @@ import Geneology from "./Geneology";
 class GeneologyContainer extends Component {
   constructor(props) {
     super(props);
-    this.state = { screen: 1 };
+
     /* temporary */
     this.props.sendData();
   }

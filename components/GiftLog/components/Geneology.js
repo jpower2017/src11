@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import GeneologyComponent from "./Geneology/Main";
 import FieldText from "./FieldText";
-import TableContainer from "./TableContainer";
+import TableContainer from "./Search/TableContainer";
 
 class Geneology extends Component {
   constructor(props) {

@@ -5,7 +5,7 @@ const subForms1 = [
     fields: [
       {
         name: "contractorLegalEntity",
-        title: "Contractor Legal Entity",
+        title: "Contractor Company Name (or Independent Contractor Name)",
         required: true
       },
       {
@@ -474,3 +474,8 @@ export const forms = [
     form: subForms1
   }
 ];
+
+export const appVars = {
+  finalMessage:
+    "Request Submitted; agreement will be emailed to you momentarily."
+};

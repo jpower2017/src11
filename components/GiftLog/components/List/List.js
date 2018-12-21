@@ -48,7 +48,7 @@ export default class List extends Component {
     this.setState({ data: nextProps.data });
   }
   onselect(x, obj) {
-    console.log("onselect x,obj " + x + " " + obj);
+    console.log("onselect x,obj " + x + " " + JSON.stringify(obj));
     if (this.state.multiSelect) {
       console.log("contains " + R.contains(x, this.state.selected));
       let arr = this.state.selected;
@@ -80,7 +80,7 @@ export default class List extends Component {
     }
 
     if (!objRequest || !objRequest[field]) {
-      console.log("HERE?");
+      console.log(" !objRequest || !objRequest[field]");
       return;
     }
     const recips = R.path([field], objRequest);
@@ -180,6 +180,8 @@ export default class List extends Component {
                       this.props.field
                     )
               }
+              deleteable={this.props.deleteable}
+              onDelete={this.props.onDelete}
             />
           ))}
         </div>

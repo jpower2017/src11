@@ -4,34 +4,48 @@ import * as R from "ramda";
 import RaisedButton from "material-ui/RaisedButton";
 import FieldText from "./FieldText";
 import FieldDropDown from "./FieldDropDown";
+import AutoComplete from "material-ui/AutoComplete";
+import {
+  isNumber,
+  emailPattern,
+  dateFormat,
+  dateFormatMMDD
+} from "../../utils/utils";
 
+//  const { eventType } = data;
 class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      /* temporary  saveEnabled true */
-      //saveEnabled: false,
-      saveEnabled: true,
+      saveEnabled: false,
       title: this.props.title,
-      createNewDisabled: false
+      data: this.props.data
+      //searchText: this.props.formGiftEvent ? this.props.data.eventType[0] : ""
     };
+
+    console.table(this.props.giftEventTypes);
   }
   componentDidMount() {
-    this.state = { data: this.props.data };
+    console.table(this.props.data);
+    this.state = {
+      data: this.props.data
+      //searchText: this.props.formGiftEvent ? this.props.data.eventType[0] : ""
+    };
   }
   componentWillReceiveProps(nextProps) {
-    //console.log(" FORM CWRP " + nextProps.selection);
+    console.log(" FORM CWRP " + JSON.stringify(nextProps));
     console.log("FORM CWRP nextprops.data " + nextProps.data);
-    this.setState({ tab: nextProps.selection });
   }
   handleChange = event => {
     this.setState({ saveEnabled: true });
+    console.log(this.validate(this.state.data));
+    this.validate(this.state.data);
     //  console.log(event.target.name);
   };
   handleSave = () => {
     console.log("Form handleSave  ");
     console.log(JSON.stringify(this.state.data));
-
+    this.setState({ saveEnabled: false });
     this.props.onSave(this.state.data);
   };
   onSave = () => {
@@ -41,6 +55,7 @@ class Form extends Component {
     let field = R.prop("name", z);
     console.log("field " + field);
     let fld = R.prop(field, this.props.data);
+    console.table(data);
     console.log("fld " + fld);
     if (fld === 0) {
       return "0";
@@ -48,7 +63,11 @@ class Form extends Component {
     if (fld === true) {
       return "True";
     } else if (fld === false) {
-      return "false";
+      return "False";
+    }
+    if (field === "eventDate") {
+      const { eventDay, eventMonth } = this.props.data;
+      return `${eventMonth} ${eventDay}`;
     }
     return fld;
   };
@@ -56,38 +75,35 @@ class Form extends Component {
     let v = this.getValue(z, data);
     console.log("v " + v);
     console.log("z.options " + JSON.stringify(z.options));
-    if (!z.options || v == "undefined") {
-      return;
+    try {
+      if (!z.options || v == "undefined") {
+        return;
+      }
+      if (Number(v)) {
+        return v;
+      }
+      if (!v) {
+        console.log("here !");
+        return 0;
+      }
+      console.log(R.find(x => x.name == String(v), z.options));
+      console.log(R.prop("value", R.find(x => x.name == String(v), z.options)));
+      return R.prop("value", R.find(x => x.name == String(v), z.options));
+    } catch (e) {
+      console.log(e.message);
     }
-    if (Number(v)) {
-      return v;
-    }
-    if (!v) {
-      console.log("here !");
-      return 0;
-    }
-    return R.prop("value", R.find(x => x.name == String(v), z.options));
   };
-  childChange = (val, name) => {
-    console.log("childchange f");
-    let newObj;
-    console.log("this.props.data " + this.props.data);
-    if (val === "") {
-      newObj = { ...this.props.data, [name]: " " };
-    } else {
-      newObj = { ...this.props.data, [name]: val };
-    }
 
-    if (name == "firstName") {
-      newObj = { ...newObj, name: `${val} ${this.props.data["lastName"]}` };
-    } else if (name == "lastName") {
-      newObj = { ...newObj, name: `${this.props.data["firstName"]} ${val}` };
-    }
-    console.table(newObj);
-    this.setState({ data: newObj });
-    //  this.props.onSave(newObj);
-    this.setState({ saveEnabled: true });
+  childChange = (val = "", name) => {
+    let data = this.state.data;
+    data = { ...data, [name]: val };
+    this.setState({ data: data });
+    console.log(this.validate(this.state.data));
+    this.validate(data)
+      ? this.setState({ saveEnabled: true })
+      : this.setState({ saveEnabled: false });
   };
+
   onNew = () => {
     this.setState({
       title: "Enter data for new entry",
@@ -106,6 +122,71 @@ class Form extends Component {
   showOptions = options => {
     return options;
   };
+
+  handleUpdateInput = searchText => {
+    console.log("EVENTS.js handleUpdateInput " + searchText);
+    this.setState({
+      searchText: searchText
+    });
+  };
+  handleNewRequest = (str, i) => {
+    console.log("handleNewRequest f " + [str, i]);
+    let data = this.state.data;
+    data = { ...data, [str]: i };
+    this.setState({ data: data });
+
+    console.log(this.validate(this.state.data));
+    this.validate(data)
+      ? this.setState({ saveEnabled: true })
+      : this.setState({ saveEnabled: false });
+    //this.props.onSave({ ...this.props.data, str: i });
+  };
+  validate = obj => {
+    console.log("FCGE validate f ");
+    console.table(obj);
+    try {
+      const reqFields = R.filter(x => x.required, this.props.fields);
+      console.log("requFIelds ...");
+      console.table(reqFields);
+      const fieldValid = reqObj => {
+        let isValid = true;
+        console.log("fieldValid " + JSON.stringify(reqObj));
+        console.log(
+          "R.prop(v,obj) " + JSON.stringify(R.prop(R.prop("name", reqObj), obj))
+        );
+        if (reqObj.type === "date") {
+          isValid = dateFormat.test(R.prop(R.prop("name", reqObj), obj));
+        } else if (reqObj.type === "dateMMDD") {
+          console.log(dateFormatMMDD(R.prop(R.prop("name", reqObj), obj)));
+          isValid = dateFormatMMDD(R.prop(R.prop("name", reqObj), obj));
+        } else {
+          console.log(
+            "!R.prop(R.prop(name, reqObj), obj) " +
+              R.prop(R.prop("name", reqObj), obj)
+          );
+          if (R.prop(R.prop("name", reqObj), obj) === undefined) {
+            console.log(R.prop(R.prop("name", reqObj), obj));
+            isValid = false;
+          }
+        }
+        return isValid;
+      };
+      const arrValids = R.map(x => fieldValid(x), reqFields);
+      console.log("arr valids " + arrValids);
+      this.setState({ validated: !R.contains(false, arrValids) });
+      return !R.contains(false, arrValids);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  /*
+  getSearchText = data => {
+    console.log("getSearchText ");
+    console.table(data);
+    const { eventType } = data;
+    console.log("eventType " + eventType);
+    return eventType[0];
+  };*/
   render() {
     const { fields, showNew } = this.props;
     return (
@@ -153,7 +234,7 @@ class Form extends Component {
                       <div
                         style={{
                           color: "#DF5C33",
-                          fontSize: "small",
+                          //  fontSize: "small",
                           marginLeft: "4px",
                           marginTop: "10px"
                         }}
@@ -162,37 +243,57 @@ class Form extends Component {
                       </div>
                       <FieldDropDown
                         options={x.options}
-                        status={
-                          this.getValueDD(x, this.props.data)
-                            ? this.getValueDD(x, this.props.data)
-                            : 1
-                        }
+                        status={this.getValueDD(x, this.props.data)}
                         //data={ }
                         onselect={value => this.childChange(value, x.name)}
                       />
                     </div>
+                  ) : x.uiType === "autoComplete" ? (
+                    <div>
+                      <div
+                        style={{
+                          color: "#DF5C33",
+                          //  fontSize: "small",
+                          marginLeft: "4px",
+                          marginTop: "10px"
+                        }}
+                      >
+                        {x.title}
+                      </div>
+                      <AutoComplete
+                        hintText="Select gift event type"
+                        searchText={
+                          this.state.searchText
+                            ? this.state.searchText
+                            : this.getValue(x)
+                        }
+                        onUpdateInput={this.handleUpdateInput}
+                        onNewRequest={str => this.handleNewRequest(x.name, str)}
+                        dataSource={x.options}
+                        //filter={(searchText, key) => key.indexOf(searchText) !== -1}
+                        filter={AutoComplete.fuzzyFilter}
+                        openOnFocus={true}
+                        name={x.name}
+                        style={{ marginLeft: "4px" }}
+                      />
+                    </div>
+                  ) : x.uiType === "textArea" ? (
+                    <FieldText
+                      obj={x}
+                      data={this.getValue(x)}
+                      change={this.childChange}
+                      type={x.type}
+                      multiLine={true}
+                    />
                   ) : (
                     <FieldText
                       obj={x}
-                      data={this.getValue(x, this.props.data)}
+                      data={this.getValue(x)}
                       change={this.childChange}
                       type={x.type}
-                      multiLine={x.uiType}
                     />
                   )
               )}
-          </div>
-          <div>
-            {!this.props.node === "gifts" && (
-              <RaisedButton
-                label="SELECT"
-                backgroundColor="#f58c32"
-                labelColor={"#fff"}
-                style={{ marginTop: "15px", marginRight: "20px" }}
-                onClick={this.props.onHandle}
-                disabled={!this.state.saveEnabled}
-              />
-            )}
           </div>
         </div>
       </Paper>

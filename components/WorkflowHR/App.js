@@ -136,6 +136,7 @@ class App extends Component {
                   submit={this.submit}
                   clearAll={() => this.setState({ data: {} })}
                   emptyReqFields={this.state.emptyReqFields}
+                  appVars={this.props.appVars}
                 />
               )
             )}

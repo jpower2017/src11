@@ -18,7 +18,8 @@ import {
   SAVE_TOKEN_AND_LOGIN,
   SET_FLOWWRIGHT_URL,
   SET_FLOWWRIGHT_LICENSE,
-  SET_WORKFLOWS
+  SET_WORKFLOWS,
+  SET_WORKFLOWS_ENUMS
 } from "../actions";
 
 import { banks } from "../components/PositivePay/reducers";
@@ -136,6 +137,13 @@ const notifications = (state = [], action) => {
       return {
         ...state,
         workflows: action.payload
+      };
+    case "SET_WORKFLOWS_ENUMS":
+      console.log("setWorkflows ENUMS");
+      console.table(action.payload);
+      return {
+        ...state,
+        workflowsENUMS: action.payload
       };
 
     default:

@@ -147,7 +147,8 @@ const ListWidget = props => {
 
     //return R.map(x => x.name, obj[field1]);
   };
-  const getRecipPersons = arr => {
+  const getRecips = (arr1 = [], arr2 = [], arr3 = [], arr4 = []) => {
+    let arr = [...arr1, ...arr2, ...arr3, ...arr4];
     console.table(arr);
     if (!arr) {
       return;
@@ -232,7 +233,12 @@ const ListWidget = props => {
                               color: "#2C3673"
                             }}
                           >
-                            {getRecipPersons(item["recipientPersons"])}
+                            {getRecips(
+                              item["recipientPersons"],
+                              item["recipientGroups"],
+                              item["recipientOrganizations"],
+                              item["recipientAnimals"]
+                            )}
                           </span>
                         </span>
                       )}

@@ -17,6 +17,7 @@ export const PRESENCE_RECEIVE_ROWS = "PRESENCE_RECEIVE_ROWS";
 export const SET_FLOWWRIGHT_URL = "SET_FLOWWRIGHT_URL";
 export const SET_FLOWWRIGHT_LICENSE = "SET_FLOWWRIGHT_LICENSE";
 export const SET_WORKFLOWS = "SET_WORKFLOWS";
+export const SET_WORKFLOWS_ENUMS = "SET_WORKFLOWS_ENUMS";
 
 let token = null;
 let login;
@@ -45,6 +46,9 @@ export const callModuleConfig = () => async (dispatch, getState) => {
   value = mc.ModuleConfiguration.metaValues;
   console.table(value);
   dispatch(setWorkflows(value));
+  value = mc.ModuleConfiguration.enumerations;
+  console.table(value);
+  dispatch(setWorkflowsENUMS(value));
 };
 export const setFlowwrightURL = payload => ({
   type: SET_FLOWWRIGHT_URL,
@@ -56,6 +60,10 @@ export const setFlowwrightLicense = payload => ({
 });
 export const setWorkflows = payload => ({
   type: SET_WORKFLOWS,
+  payload: payload
+});
+export const setWorkflowsENUMS = payload => ({
+  type: SET_WORKFLOWS_ENUMS,
   payload: payload
 });
 export const getNotifications = () => async dispatch => {

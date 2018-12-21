@@ -86,3 +86,7 @@ const subForms1 = [
 ];
 
 export const forms = [{ title: "Toll Pass Request Form", form: subForms1 }];
+
+export const appVars = {
+  finalMessage: "Request submitted."
+};

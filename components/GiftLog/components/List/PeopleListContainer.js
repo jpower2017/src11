@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
 import List from "./List";
-//import {} from "../actions";
+import { assocRecipientRequest } from "../../actions";
 
 class ListContainer extends Component {
   constructor(props) {
@@ -17,7 +17,11 @@ class ListContainer extends Component {
       <div>
         <div style={{ fontWeight: "bold" }}>{title}</div>
         {this.props.rows && (
-          <List data={this.props.rows} title="Geneology people" />
+          <List
+            data={this.props.rows}
+            title="Geneology people"
+            onselect={this.props.onselect}
+          />
         )}
       </div>
     );
@@ -62,10 +66,10 @@ const mapStateToProps = (state, ownProps) => ({
     : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
+  onselect: (recipientID, obj) => {
+    dispatch(assocRecipientRequest(recipientID));
+  }
   /*
-  searchPerson: str => {
-    dispatch(searchPerson(str));
-  },
   sendData: () => {
     dispatch(sendData());
   }

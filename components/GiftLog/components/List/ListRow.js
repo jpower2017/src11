@@ -15,6 +15,7 @@ import { RadioButton } from "material-ui/RadioButton";
 import Checkbox from "material-ui/Checkbox";
 import ExpandLess from "material-ui/svg-icons/navigation/arrow-drop-up";
 import ExpandMore from "material-ui/svg-icons/navigation/arrow-drop-down";
+import HighLightOff from "material-ui/svg-icons/action/highlight-off";
 
 //import AutoComplete from "material-ui/AutoComplete";
 //import Form from "../Form";
@@ -42,9 +43,9 @@ export default class ListRow extends React.Component {
     //  console.log("Row componentWillReceiveProps " + JSON.stringify(nextProps));
   }
   toggle() {
-    console.log("  toggle id " + this.props.data.id);
+    console.log("  toggle uuid " + this.props.data.uuid);
     this.setState({ iconClick: !this.state.iconClick });
-    this.props.onselect(this.props.data.id, this.props.data);
+    this.props.onselect(this.props.data.uuid, this.props.data);
   }
   getIndent(n, hasChildren) {
     if (!hasChildren && !n) {
@@ -58,6 +59,9 @@ export default class ListRow extends React.Component {
     this.setState({ expand: !this.state.expand });
     this.state.expand && this.props.hide(id);
     !this.state.expand && this.props.show(id);
+  }
+  delete(data) {
+    this.props.onDelete(R.prop("uuid", data));
   }
   render() {
     const {
@@ -144,11 +148,11 @@ export default class ListRow extends React.Component {
                 )}
               </div>
             )}
-            <div
-              style={{ padding: "20px", cursor: "pointer" }}
-              onClick={() => this.toggle()}
-            >
-              {label}
+            <div style={{ padding: "20px", cursor: "pointer" }}>
+              <span onClick={() => this.toggle()}>{label}</span>
+              {this.props.deleteable && (
+                <HighLightOff onClick={() => this.delete(this.props.data)} />
+              )}
             </div>
           </div>
         </div>

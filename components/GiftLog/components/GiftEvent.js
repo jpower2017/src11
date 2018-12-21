@@ -5,7 +5,6 @@ import FormContainerGiftEvent from "./Form/FormContainerGiftEvent";
 class GiftEvent extends Component {
   constructor(props) {
     super(props);
-    this.state = { screen: 1 };
   }
   componentDidMount() {}
 
@@ -14,7 +13,7 @@ class GiftEvent extends Component {
     return (
       <div>
         <div style={{ fontWeight: "bold" }}>{title}</div>
-        <div>GiftEventComp</div>
+
         <FormContainerGiftEvent />
       </div>
     );

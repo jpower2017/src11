@@ -1,5 +1,27 @@
+export const fieldsGiftEvent = [
+  {
+    name: "eventType",
+    title: "Gift Type",
+    uiType: "autoComplete",
+    required: true
+  },
+  {
+    name: "eventDate",
+    title: "Event Date (MM/DD)",
+    type: "dateMMDD",
+    uiType: "textArea",
+    required: true
+  },
+  { name: "notes", title: "Gift event notes", uiType: "textArea" }
+];
+
 export const fieldsRequest = [
-  { name: "requestNotes", title: "Request Notes", uiType: "textArea" },
+  {
+    name: "requestNotes",
+    title: "Request Notes",
+    uiType: "textArea",
+    required: true
+  },
   {
     name: "registryStatus",
     title: "Registry status",
@@ -8,27 +30,11 @@ export const fieldsRequest = [
   },
   {
     name: "active",
-    title: "Active",
-    uiType: "dropDown"
+    title: "Active status",
+    uiType: "dropDown",
+    type: "boolean"
     //  options: activeStatuses
   }
-];
-
-export const fieldsGiftEvent = [
-  {
-    name: "eventDate",
-    title: "Event Date(optional)(MMDDYYYY)",
-    type: "date",
-    uiType: "textArea"
-  },
-  { name: "giftType", title: "Gift Type", uiType: "textArea" },
-  {
-    name: "registryStatus",
-    title: "Registry status",
-    uiType: "dropDown"
-    //  options: registryStatuses
-  },
-  { name: "notes", title: "Gift event notes", uiType: "textArea" }
 ];
 
 export const columnsPerson = [
@@ -59,3 +65,70 @@ export const statuses = [
   { status: "wrap", title: "Wrap", color: "#EF9A9A", value: 6 },
   { status: "received", title: "Received", color: "#9E9E9E", value: 7 }
 ];
+export const registryStatuses = [
+  { name: "Yes", title: "Yes", value: 1 },
+  { name: "No", title: "No", value: 2 }
+];
+export const activeStatuses = [
+  { name: "True", title: "True", value: 1 },
+  { name: "False", title: "False", value: 2 }
+];
+export const recurringStatuses = [
+  { name: "True", title: "True", value: 1 },
+  { name: "False", title: "False", value: 2 }
+];
+export const fieldsSummary = [
+  {
+    name: "assignedTo",
+    title: "Assigned to",
+    type: "string",
+    order: 1,
+    uiType: "dropDown",
+    loadConfig: true,
+    configName: "configPersonalAssts"
+  }
+];
+
+export const columnsGiftEventInstance = [
+  { name: "eventType", title: "EVENT", type: "string", order: 1 },
+  { name: "date", title: "DATE", type: "string", order: 2 },
+  { name: "recipients", title: "RECIPIENTS", type: "string", order: 3 },
+  { name: "registry", title: "REGISTRY STATUS", type: "string", order: 4 },
+  { name: "recurring", title: "RECURRING", type: "string", order: 5 }
+];
+
+/*
+export const fieldsGift = [
+  { name: "value", title: "Value", type: "currency", order: 1 },
+  {
+    name: "description",
+    title: "Description",
+    type: "string",
+    order: 2,
+    uiType: "textArea"
+  },
+  {
+    name: "assignedTo",
+    title: "Assigned to",
+    type: "string",
+    order: 3,
+    uiType: "dropDown",
+    loadConfig: true,
+    configName: "configPersonalAssts"
+  },
+  {
+    name: "sentiment",
+    title: "Sentiment",
+    type: "string",
+    order: 4,
+    uiType: "textArea"
+  },
+  {
+    name: "giftNotes",
+    title: "Gift Notes",
+    type: "string",
+    order: 5,
+    uiType: "textArea"
+  }
+];
+*/

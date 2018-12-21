@@ -7,7 +7,6 @@ import RequestsList from "./List/RequestsListContainer";
 class GiftRequests extends Component {
   constructor(props) {
     super(props);
-    this.state = { screen: 1 };
   }
   componentDidMount() {}
 
@@ -16,7 +15,7 @@ class GiftRequests extends Component {
     return (
       <div>
         <div style={{ fontWeight: "bold" }}>{title}</div>
-        <div>GiftRequestsComp</div>
+
         <div style={{ display: "flex" }}>
           <FormContainerRequest />
           <div style={{ padding: "10px" }}>

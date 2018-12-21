@@ -77,6 +77,7 @@ class VerticalNonLinear extends React.Component {
     return arr ? R.map(x => <div>{x}</div>, arr) : "";
   };
   renderStepActions(step, emptyReqFields) {
+    console.log(R.prop("finalMessage", this.props.appVars));
     return (
       <div style={{ margin: "12px 0", padding: "2px" }}>
         {step > 0 && (
@@ -98,41 +99,50 @@ class VerticalNonLinear extends React.Component {
             style={{ marginRight: 12 }}
           />
         )}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {step == this.state.stepIndexMax && (
+            <div>
+              <RaisedButton
+                label="Submit"
+                backgroundColor="#f58c32"
+                labelColor="#fff"
+                disableTouchRipple={true}
+                disableFocusRipple={true}
+                onClick={this.handleSubmit}
+                disabled={!this.props.allReqCompleted || this.state.submitted}
+              />
+              <h4>{this.showEmptyFieldHeader(emptyReqFields)}</h4>
+              <div>{this.showEmptyFieldText(emptyReqFields)}</div>
+            </div>
+          )}
 
-        {step == this.state.stepIndexMax && (
+          {this.state.submitted && (
+            <div
+              style={{
+                marginLeft: "20px",
+                marginRight: "20px",
+                color: "#f58c32",
+                fontSize: "larger"
+              }}
+            >
+              {R.prop("finalMessage", this.props.appVars)
+                ? R.prop("finalMessage", this.props.appVars)
+                : "ERROR: NO FINAL MESSAGE"}
+            </div>
+          )}
+        </div>
+
+        {this.state.submitted && (
           <div>
             <RaisedButton
-              label="Submit"
-              backgroundColor="#f58c32"
-              labelColor="#fff"
-              disableTouchRipple={true}
-              disableFocusRipple={true}
-              onClick={this.handleSubmit}
-              disabled={!this.props.allReqCompleted || this.state.submitted}
-            />
-            <h4>{this.showEmptyFieldHeader(emptyReqFields)}</h4>
-            <div>{this.showEmptyFieldText(emptyReqFields)}</div>
-          </div>
-        )}
-        {this.state.submitted && (
-          <span>
-            <span style={{ marginLeft: "20px", marginRight: "20px" }}>
-              <span style={{ color: "#f58c32", fontSize: "larger" }}>
-                Form submitted.
-              </span>
-              <span style={{ fontStyle: "italic", marginLeft: "6px" }}>
-                Clear form for new submission.
-              </span>
-            </span>
-            <RaisedButton
-              label="Clear form"
+              label="Clear form for new submission"
               disableTouchRipple={true}
               disableFocusRipple={true}
               primary={true}
               onClick={this.handleClearAll}
-              style={{ marginRight: 12 }}
+              style={{ marginTop: "12px" }}
             />
-          </span>
+          </div>
         )}
       </div>
     );

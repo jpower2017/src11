@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as R from "ramda";
 //import ThemeDefault from "./theme-default";
 //import Stepper from "./Stepper.js";
-import { forms } from "./dataTollPass";
+import { forms, appVars } from "./dataTollPass";
 //import { fetchWrap, getSupervisors, doesUserExist } from "./common/http.js";
 import { connect } from "react-redux";
 import { callModuleConfig } from "../../actions";
@@ -34,6 +34,7 @@ class TollPass extends Component {
           appConfig={this.props.appConfig}
           url={this.props.url}
           license={this.props.license}
+          appVars={appVars}
         />
       </div>
     );

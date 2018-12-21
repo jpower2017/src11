@@ -2,11 +2,12 @@ import React from "react";
 import * as R from "ramda";
 import Paper from "material-ui/Paper";
 import Row from "./Row";
+import RowMain from "./RowMain";
 import Header from "./Header";
 import Paginated from "./Paginated";
 //import "./Table.js";
 import "./Table.css";
-import { statuses } from "../../common/data";
+//import { statuses } from "../../../common/data";
 
 import { componentFromProp } from "recompose";
 
@@ -107,8 +108,6 @@ export default class Table extends React.Component {
   */
 
   getRows = (data, component) => {
-    //console.log("getRows component = " + component);
-    console.table(data);
     const RowType = componentFromProp("type");
     return data.map((row, index) => (
       <RowType
@@ -147,20 +146,15 @@ export default class Table extends React.Component {
     return (
       <div>
         <Paper zDepth={2}>
-          {this.props.paginated && (
-            <Paginated
-              currentPage={this.props.page + 1}
-              nRows={this.props.perPage}
-              onPaginated={this.onPaginated}
-              totalRows={this.props.totalRows}
-            />
-          )}
           <Header
             data={columns}
             sortable={sortable}
             onSortFunc={this.onSortFunc}
           />
 
+          {this.props.rowType == "RowMain" &&
+            this.props.rows &&
+            this.getRows(this.state.rows, RowMain)}
           {this.props.rowType == "Row" &&
             this.props.rows &&
             this.getRows(this.state.rows, Row)}
