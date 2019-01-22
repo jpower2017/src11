@@ -36,7 +36,7 @@ class Cell extends Component {
     return (
       <div
         style={{
-          //width: "8%",
+          width: "10%",
           marginLeft: "0px",
           padding: "0px 2px"
           //border: "2px solid red"

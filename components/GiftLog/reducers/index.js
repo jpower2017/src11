@@ -7,9 +7,29 @@ import {
   SET_CONFIG_GIFT_LOG2,
   SET_VAR_GIFT_LOG2,
   GIFT_LOG_ADD_GIFT_EVENTS,
-  GIFT_LOG_UPDATE_GIFT_EVENT
+  GIFT_LOG_UPDATE_GIFT_EVENT,
+  GIFT_LOG_MERGE_ROW
 } from "../actions";
 
+const mergeRows = (obj1, obj2) => {
+  console.log("mergeRows");
+  console.table(obj1);
+  console.table(obj2);
+  let children, partners;
+  try {
+    children = R.uniq([...obj1.children, ...obj2.children]);
+    console.table(children);
+  } catch (e) {
+    console.log(e.message);
+  }
+  try {
+    partners = R.uniq([...obj1.partners, ...obj2.partners]);
+    console.table(partners);
+  } catch (e) {
+    console.log(e.message);
+  }
+  return { ...obj1, children: children, partners: partners };
+};
 const tweakData = obj => {
   //console.log("tweakData");
   const addKeyID = obj => {
@@ -41,7 +61,7 @@ const tweakData = obj => {
 };
 
 export const giftLog = (state = [], action) => {
-  let uuid, otherRows;
+  let uuid, otherRows, origRow, newRow, newRows, mainRow;
   switch (action.type) {
     case GIFT_LOG_SEARCH:
       console.log("REDUCER GIFT_LOG_SEARCH ");
@@ -57,6 +77,27 @@ export const giftLog = (state = [], action) => {
       return {
         ...state,
         [action.name]: [...action.payload]
+      };
+    case GIFT_LOG_MERGE_ROW:
+      console.log("REDUCER GIFT_LOG_MERGE_ROW");
+      console.table(action.payload);
+      uuid = R.prop("uuid", action.payload);
+      console.log("uuid " + uuid);
+      if (!!R.find(x => x.uuid === uuid, state[action.name])) {
+        origRow = R.find(x => x.uuid === uuid, state[action.name]);
+        console.table(origRow);
+        newRow = mergeRows(origRow, action.payload);
+      } else {
+        newRow = action.payload;
+      }
+
+      console.table(newRow);
+      newRows = R.uniqBy(R.prop("uuid"), [newRow, ...state[action.name]]);
+      mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
+      newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
+      return {
+        ...state,
+        [action.name]: newRows
       };
     case GIFT_LOG_ADD_GIFT_EVENTS:
       return {
@@ -83,11 +124,17 @@ export const giftLog = (state = [], action) => {
     case GIFT_LOG_UPDATE_FORM:
       console.log("REDUCER GIFT_LOG_UPDATE_FORM");
       uuid = R.prop("uuid", action.payload);
-      console.log("RDUCER uuid " + uuid);
+      console.log("REDUCER uuid " + uuid);
       otherRows = R.filter(x => x.uuid !== uuid, state[action.name]);
+      newRows = [...otherRows, action.payload];
+      console.log("state.mainperson " + state.mainPerson);
+      mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
+      newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
+      console.table(newRows);
+      console.table(R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]));
       return {
         ...state,
-        [action.name]: [...otherRows, action.payload]
+        [action.name]: newRows
       };
     case SET_CONFIG_GIFT_LOG2:
       return {
@@ -106,7 +153,8 @@ export const giftLog = (state = [], action) => {
       };
   }
 };
-
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 export const getRequests = state => {
   console.log("REDUCER getRequests");
   console.table(state);

@@ -445,10 +445,22 @@ export const loadConfigs = () => async (dispatch, getState) => {
   const token = getState().notifications.token;
   let temp = await HTTP.getModuleConfig(token, "Gift Log");
   let enums = temp.ModuleConfiguration.enumerations;
-
-  let et = R.find(x => x.name == "Event Type", enums);
-  let etValues = et.metaValues;
-  dispatch(setConfig("eventTypes", etValues));
+  try {
+    let et = R.find(x => x.name == "Event Type", enums);
+    let etValues = et.metaValues;
+    dispatch(setConfig("eventTypes", etValues));
+  } catch (e) {
+    console.log("NO EVENT ENUM...try RECURRING/INCIDENDTAL ENUM");
+  }
+  try {
+    let re = R.find(x => x.name == "Recurring Events", enums);
+    let ie = R.find(x => x.name == "Incidental Events", enums);
+    let etValues = [...re.metaValues, ...ie.metaValues];
+    console.table(etValues);
+    dispatch(setConfig("eventTypes", etValues));
+  } catch (e) {
+    console.log("NO EVENT ENUM...try RECURRING/INCIDENDTAL ENUM");
+  }
 
   let pas = R.find(x => x.name === "Personal Assistant", enums);
   let pasValues = pas.metaValues;
@@ -536,6 +548,7 @@ export const getData = (filter = null) => async (dispatch, getState) => {
   console.timeEnd("http-get-events");
   dispatch(setVar("loading", false));
   //  console.table(ge.GiftEvents);
+  dispatch(setFilter2([], "GEI_RAW"));
   dispatch(setRawAndGEI(ge.GiftEvents));
 };
 
@@ -1573,6 +1586,7 @@ export const queryGiftEvent = id => async (dispatch, getState) => {
   console.log("next addtotables");
   console.table(allGifts);
   R.map(x => addToTables(x), allGifts);
+  dispatch(setFilter2(null, "groupHierarchy"));
 };
 /* END queryGiftEvent  */
 

@@ -69,7 +69,7 @@ class Main extends Component {
           currentScreen={this.state.screen}
           lastScreen={5}
         />
-        <div style={{ backgroundColor: "#998877", width: "900px" }}>
+        <div style={{ backgroundColor: "#998877", width: "1200px" }}>
           MAIN GIFT LOG
         </div>
         {this.getScreen()}

@@ -47,8 +47,7 @@ export const columnsPerson = [
   { name: "addMain", title: "Main", type: "string", order: 8 },
   { name: "addParent", title: "Parent", type: "string", order: 9 },
   { name: "addPartner", title: "Partner", type: "string", order: 10 },
-  { name: "addChild", title: "Child", type: "string", order: 11 },
-  { name: "addSib", title: "Sibling", type: "string", order: 12 }
+  { name: "addChild", title: "Child", type: "string", order: 11 }
 ];
 
 export const statuses = [

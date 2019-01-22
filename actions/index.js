@@ -108,11 +108,11 @@ export const getNotifications = () => async dispatch => {
 
 /*  to do why passing http.getuser instead of grabbing from redux */
 export const getNotifications2 = () => async (dispatch, getState) => {
-  console.log("ACTION getNotifications2");
+  //  console.log("ACTION getNotifications2");
   //const userData = await HTTP.getUser(token, login);
   //  const roleNames = R.map(x => x.name, userData.PortalUser.roles);
   const roleNames = R.map(x => x.name, getState().notifications.user.roles);
-  console.table(roleNames);
+  //  console.table(roleNames);
   const showPresence = R.contains("Presence Viewer Submitter", roleNames);
   console.log(showPresence);
   if (showPresence) {

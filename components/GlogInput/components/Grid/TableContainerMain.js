@@ -275,7 +275,7 @@ recipients: obj.eventPersons
   : [""],
   */
 const clean2 = geis => {
-  console.table(geis);
+  //  console.table(geis);
   const combineRecips = (persons, animals, evtOrgs, evtGroups) => {
     let peps = [""];
     let anims = [""];
@@ -318,7 +318,7 @@ const clean2 = geis => {
     };
   };
   const temp = R.map(x => newObj(x), geis);
-  console.table(temp);
+  //console.table(temp);
   return R.map(x => newObj(x), geis);
 };
 

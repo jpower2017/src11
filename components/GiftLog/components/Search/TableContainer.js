@@ -8,6 +8,7 @@ import { connect } from "react-redux";
   GEI_add_recip,
   addToNode
 } from "../../actions";*/
+import { selectedRowAndType } from "../../actions";
 //import { getRows, getSelection } from "../../reducers";
 import Table from "../Table/Table";
 import { columnsPerson } from "../../common/data";
@@ -104,7 +105,7 @@ class TableContainer extends Component {
   render() {
     console.log("TC render f");
     return (
-      <div>
+      <div style={{ maxHeight: "400px", overflow: "auto" }}>
         {this.props.rows && this.props.rows.length ? (
           <Table
             columns={
@@ -138,6 +139,7 @@ class TableContainer extends Component {
             totalRows={this.props.totalRows}
             onUpdate={this.props.onUpdate}
             rowType="Row"
+            onselect={this.props.onselected}
           />
         ) : (
           <div style={{ marginLeft: "200px" }}>Search results here.</div>
@@ -154,9 +156,9 @@ const mapStateToProps = (state, ownProps) => ({
     : 0
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onselected: id => {
-    //  dispatch(setSearchID(id));
-    //  dispatch(setSelectedRow(id));
+  onselected: (id, typ) => {
+    console.log("onselected id  " + id);
+    dispatch(selectedRowAndType(id, typ));
   }
 });
 

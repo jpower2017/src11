@@ -76,8 +76,6 @@ export default class Table extends React.Component {
         this.state.rows
       );
       b = R.map(x => (x.id === id ? { ...x, selected: true } : x), a);
-      console.log("b");
-      console.table(b);
       /** DONT NEED TO SET ROWS STATE ANYMORE ***/
       this.setState({ rows: b });
     }
@@ -123,7 +121,8 @@ export default class Table extends React.Component {
         selected={row.selected}
         submittable={this.props.submittable}
         onUpdate={this.props.onUpdate}
-        onselect={(uuid, typ) => console.log("uuid and type " + [uuid, typ])}
+        //onselect={(uuid, typ) => console.log("uuid and type " + [uuid, typ])}
+        onselect={(uuid, typ) => this.props.onselect(uuid, typ)}
       />
     ));
   };
@@ -144,14 +143,13 @@ export default class Table extends React.Component {
     } = this.props;
 
     return (
-      <div>
+      <div style={{ width: "1500px" }}>
         <Paper zDepth={2}>
           <Header
             data={columns}
             sortable={sortable}
             onSortFunc={this.onSortFunc}
           />
-
           {this.props.rowType == "RowMain" &&
             this.props.rows &&
             this.getRows(this.state.rows, RowMain)}

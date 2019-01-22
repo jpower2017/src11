@@ -28,6 +28,7 @@ class ListContainer extends Component {
   }
 }
 
+/*
 const createRequestList = data => {
   const main = 1;
   const id = 1;
@@ -42,28 +43,51 @@ const createRequestList = data => {
     let rowProp = R.prop(relation, a);
     return R.filter(x => R.contains(x.id, rowProp), data);
   };
-
-  /* create list of all for selected person */
   let list = [];
-  R.map(x => list.push({ ...x, relation: "parent" }), getOthers("parents"));
-  list.push({
-    ...getMain(id, data)[0],
-    relation: "main"
-  });
   list.push({
     ...getOthers("partners")[0],
     relation: "partner"
   });
-  R.map(x => list.push({ ...x, relation: "sib" }), getOthers("siblings"));
+
   R.map(x => list.push({ ...x, relation: "child" }), getOthers("children"));
   list = R.filter(x => x.id, list);
   return list;
 };
+const sortByAnchors = rows =>{
+  let a=[];
+  let gen3Rows = R.filter(x=>x.g==3,rows)
+  const process = row =>{
+    a.push(row)
+    R.map(x=> a.push(x) ,R.filter(x=>R.contains(row.id,x.children) , rows))
+    let childRows = R.filter(x=>R.contains( x.id ,row.children)  ,rows)
+    R.map(x=> a.push(x) ,childRows)
+  }
+  R.map(process, gen3Rows)
+  return a
+}
+*/
+const sortByAnchors = rows => {
+  console.table(rows);
+  let a = [];
+  let gen3Rows = R.filter(x => x.generation == 3, rows);
+  const process = row => {
+    console.table(row);
+    a.push(row);
+    R.map(
+      x => a.push(x),
+      R.filter(x => R.contains(row.uuid, x.children), rows)
+    );
+    let childRows = R.filter(x => R.contains(x.uuid, row.children), rows);
+    R.map(x => a.push(x), childRows);
+    console.log(a.toString());
+  };
+  R.map(process, gen3Rows);
+  console.table(a);
+  return a;
+};
 
 const mapStateToProps = (state, ownProps) => ({
-  rows: state.giftLog.geneology
-    ? createRequestList(state.giftLog.geneology)
-    : null
+  rows: state.giftLog.geneology ? sortByAnchors(state.giftLog.geneology) : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onselect: (recipientID, obj) => {

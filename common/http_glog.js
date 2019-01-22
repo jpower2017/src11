@@ -648,7 +648,7 @@ export const removeGiftRequestOrganization = (jwt, geiID, organizationUUID) => {
   );
   const query = `
        mutation removeGiftRequestOrganization ($giftRequestUUID:String,$organizationUUID:String) {
-         RemoveGiftRequestOrganization ( giftRequestUUID:$giftRequestUUID,organizationUUID:$organizationUUID) {
+         RemoveGiftRequestOrganization ( giftRequestUUID:$giftRequestUUID,organizationUUID:$organizationUUID)
     }
     `;
   const variables = {

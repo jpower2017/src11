@@ -64,9 +64,9 @@ export default class List extends Component {
     this.props.onselect(x, obj);
   }
   bHighlight = (id, selected, objRequest, requestID, field = "recipients") => {
-    //console.log(
-    //  "bHighlight " + [id, selected, requestID, JSON.stringify(objRequest)]
-    //  );
+    console.log(
+      "bHighlight " + [id, selected, requestID, JSON.stringify(objRequest)]
+    );
 
     let show = "";
     if (requestID === id) {
@@ -162,7 +162,7 @@ export default class List extends Component {
               show={this.show}
               label={
                 x.name
-                  ? `${x.name}----- ${x.relation}`
+                  ? `${x.name} -- ${x.generation}`
                   : x.lastName
                     ? `${x.firstName} ${x.lastName} `
                     : x.requestNotes

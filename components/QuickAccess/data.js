@@ -1,11 +1,11 @@
 const employee = [
   {
-    name: "Payroll/HR website -- TriNet",
+    name: "Payroll/HR Website -- TriNet",
     link: "https://trinet.hrpassport.com/",
     target: "blank"
   },
   {
-    name: "PTO Request for Time-off Form",
+    name: "PTO Request for Time Off Form",
     link: "https://bluespruce.box.com/s/hfg8o65tnmg8o8hhs08hjjousfcvqm3e",
     target: "blank"
   },
@@ -23,7 +23,7 @@ const employee = [
 ];
 const financial = [
   {
-    name: "BSCC Expense-report Form",
+    name: "BSCC Expense Report Form",
     link: "https://bluespruce.box.com/s/jqm3dx51otuukz1zx1tsbqt0bu8rizg8",
     target: "blank"
   },
@@ -34,7 +34,7 @@ const financial = [
     target: "self"
   },
   {
-    name: "Direct Deposit for Expense-reimbursement Form",
+    name: "Direct Deposit for Expense Reimbursement Form",
     link: "https://bluespruce.box.com/s/ghhbbf73y0k7u2l0b8buiyu9pv2tyejb",
     target: "blank"
   },

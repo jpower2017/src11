@@ -99,7 +99,6 @@ export default class Row extends React.Component {
 
   renderIconButtons = typ => {
     const data = this.props.data;
-    console.log("uuid " + data.uuid);
     const relationIcons = [
       {
         name: "main",
@@ -133,9 +132,10 @@ export default class Row extends React.Component {
     return (
       <div
         style={{
-          width: "8%",
+          width: "10%",
           marginLeft: "0px",
-          padding: "0px 2px"
+          padding: "0px 2px",
+          cursor: "pointer"
         }}
       >
         {R.prop("icon", R.find(x => x.name == typ, relationIcons))}
@@ -150,14 +150,12 @@ export default class Row extends React.Component {
       this.props.onclick(data.id);
     };
     const rollOver = () => {
-      return;
       this.setState({
         onmouseover: true,
         color: rollOverColor
       });
     };
     const rollOut = () => {
-      return;
       this.setState({
         onmouseover: false,
         color: color
@@ -183,7 +181,6 @@ export default class Row extends React.Component {
           {this.renderIconButtons("parent")}
           {this.renderIconButtons("partner")}
           {this.renderIconButtons("child")}
-          {this.renderIconButtons("sibling")}
         </div>
 
         <Divider />
