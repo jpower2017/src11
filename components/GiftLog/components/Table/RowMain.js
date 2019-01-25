@@ -78,7 +78,7 @@ export default class Row extends React.Component {
           "recipients",
           "registry",
           "recurring"
-        ]) && <Cell data={objData[x]} />,
+        ]) && <Cell data={objData[x]} width={this.props.cellWidth} />,
       ks
     );
   };

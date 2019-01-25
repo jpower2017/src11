@@ -6,10 +6,16 @@ import { saveForm } from "../../actions";
 import Form from "./Form";
 import { fieldsSummary } from "../../common/data";
 import RaisedButton from "material-ui/RaisedButton";
-import { getCurrentGiftEvent, getRequests } from "../../reducers";
+import {
+  getCurrentGiftEvent,
+  getRequests,
+  bIncidentalOrRecurring
+} from "../../reducers";
 import List2Obj from "../List2/List2Obj";
 import List2Array from "../List2/List2Array";
 import CircleAdd from "material-ui/svg-icons/image/control-point";
+import Edit from "material-ui/svg-icons/image/edit";
+import Search from "material-ui/svg-icons/action/search";
 
 /* to do   add array of configs from a parent wrapper */
 class FormContainerRequest extends Component {
@@ -25,18 +31,43 @@ class FormContainerRequest extends Component {
           : x
     );
   }
+  eventTypeMessage = typ => {
+    return typ === "incidental"
+      ? `Follow up this incidental gift event with another gift event?`
+      : "Add another gift event?";
+  };
   render() {
     const { title } = this.props;
     return (
       <div>
+        <div style={{ fontWeight: "bold" }}>{title}</div>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between"
           }}
         >
-          <div style={{ fontWeight: "bold" }}>{title}</div>
           <div style={{ display: "flex" }}>
+            <div>
+              {this.eventTypeMessage(this.props.bIncidentalOrRecurring)}
+            </div>
+            <div
+              onClick={() => this.props.onEdit()}
+              style={{
+                backgroundColor: "#f58c32",
+                color: "white",
+                borderRadius: "4px",
+                padding: "4px",
+                margin: "4px",
+                cursor: "pointer"
+              }}
+            >
+              <span style={{ padding: "4px", fontVariant: "small-caps" }}>
+                Gift event
+              </span>
+
+              <Edit color="#fff" />
+            </div>
             <div
               onClick={() => this.props.onAddRequest()}
               style={{
@@ -44,11 +75,15 @@ class FormContainerRequest extends Component {
                 color: "white",
                 borderRadius: "4px",
                 padding: "4px",
-                margin: "4px"
+                margin: "4px",
+                cursor: "pointer"
               }}
             >
-              <CircleAdd color="#fff" style={{ cursor: "pointer" }} /> Add/Edit
-              a request
+              <span style={{ padding: "4px", fontVariant: "small-caps" }}>
+                Request
+              </span>
+              <CircleAdd color="#fff" />
+              <Edit color="#fff" />
             </div>
 
             <div
@@ -58,23 +93,14 @@ class FormContainerRequest extends Component {
                 color: "white",
                 borderRadius: "4px",
                 padding: "4px",
-                margin: "4px"
+                margin: "4px",
+                cursor: "pointer"
               }}
             >
-              Done/Return to list
-            </div>
-
-            <div
-              onClick={() => this.props.onEdit()}
-              style={{
-                backgroundColor: "#f58c32",
-                color: "white",
-                borderRadius: "4px",
-                padding: "4px",
-                margin: "4px"
-              }}
-            >
-              Edit gift event
+              <span style={{ padding: "4px", fontVariant: "small-caps" }}>
+                List
+              </span>
+              <Search color="#fff" />
             </div>
           </div>
         </div>
@@ -87,9 +113,6 @@ class FormContainerRequest extends Component {
             onSave={this.props.saveForm}
           />
         )}
-        <div>
-          TODO: if this is incidental, would you like to add a recurring event?
-        </div>
       </div>
     );
   }
@@ -100,7 +123,10 @@ const mapStateToProps = (state, ownProps) => ({
     ? state.giftLog.personalAssistants
     : null,
   giftEvent: getCurrentGiftEvent(state),
-  requests: getRequests(state)
+  requests: getRequests(state),
+  bIncidentalOrRecurring: bIncidentalOrRecurring(state)
+    ? bIncidentalOrRecurring(state)
+    : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   saveForm: obj => {

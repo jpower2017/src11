@@ -22,8 +22,6 @@ class Form extends Component {
       data: this.props.data
       //searchText: this.props.formGiftEvent ? this.props.data.eventType[0] : ""
     };
-
-    console.table(this.props.giftEventTypes);
   }
   componentDidMount() {
     console.table(this.props.data);
@@ -44,7 +42,6 @@ class Form extends Component {
   };
   handleSave = () => {
     console.log("Form handleSave  ");
-    console.log(JSON.stringify(this.state.data));
     this.setState({ saveEnabled: false });
     this.props.onSave(this.state.data);
   };
@@ -52,24 +49,28 @@ class Form extends Component {
     this.handleSave();
   };
   getValue = (z, data) => {
-    let field = R.prop("name", z);
-    console.log("field " + field);
-    let fld = R.prop(field, this.props.data);
-    console.table(data);
-    console.log("fld " + fld);
-    if (fld === 0) {
-      return "0";
+    try {
+      let field = R.prop("name", z);
+      console.log("field " + field);
+      let fld = R.prop(field, this.props.data);
+      console.table(data);
+      console.log("fld " + fld);
+      if (fld === 0) {
+        return "0";
+      }
+      if (fld === true) {
+        return "True";
+      } else if (fld === false) {
+        return "False";
+      }
+      if (field === "eventDate") {
+        const { eventDay, eventMonth } = this.props.data;
+        return `${eventMonth} ${eventDay}`;
+      }
+      return fld;
+    } catch (e) {
+      console.log("CATCH " + e.message);
     }
-    if (fld === true) {
-      return "True";
-    } else if (fld === false) {
-      return "False";
-    }
-    if (field === "eventDate") {
-      const { eventDay, eventMonth } = this.props.data;
-      return `${eventMonth} ${eventDay}`;
-    }
-    return fld;
   };
   getValueDD = (z, data) => {
     let v = this.getValue(z, data);
@@ -188,7 +189,7 @@ class Form extends Component {
     return eventType[0];
   };*/
   render() {
-    const { fields, showNew } = this.props;
+    const { fields } = this.props;
     return (
       <Paper zDepth={1}>
         <div
@@ -198,16 +199,6 @@ class Form extends Component {
             minWidth: "400px"
           }}
         >
-          {showNew && (
-            <RaisedButton
-              label="CREATE NEW"
-              backgroundColor="#f58c32"
-              labelColor={"#fff"}
-              onClick={this.onNew}
-              disabled={this.state.saveEnabled}
-              style={{ marginLeft: "4px" }}
-            />
-          )}
           <RaisedButton
             label="Save"
             backgroundColor="#f58c32"

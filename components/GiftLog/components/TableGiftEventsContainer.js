@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
-import { getDataForComp, rowSubmit, setVar } from "../actions";
+import { getDataForComp, rowSubmit, setVar, loadConfigs } from "../actions";
 /*import //  rowSubmit,
 //  setView,
 //setSelectedRow,
@@ -12,6 +12,10 @@ import { getDataForComp, rowSubmit, setVar } from "../actions";
 import Table from "./Table/Table";
 import { columnsGiftEventInstance } from "../common/data";
 import RaisedButton from "material-ui/RaisedButton";
+import CircleAdd from "material-ui/svg-icons/image/control-point";
+//import { filterEventType } from "../reducers";
+//import Checkbox from "material-ui/Checkbox";
+import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton";
 
 /* could R.pick row obj keys from here instand of RowMain */
 
@@ -26,8 +30,10 @@ class TableContainer extends Component {
       totalRows: null,
       bPaginated: true,
       people: this.props.people,
-      gifts: this.props.gifts
+      gifts: this.props.gifts,
+      eventType: "all"
     };
+    this.props.loadConfigs();
   }
   componentDidMount() {
     console.log("TableContainerMain CDM");
@@ -131,19 +137,96 @@ class TableContainer extends Component {
     this.props.onNew();
     this.props.setVar("currentGiftEvent", null);
   };
+  //tthis.setState(prevState => ({
+  //  selectedPerson: uuid
+  //}));
+  updateEventType = () => {
+    if (this.state.incidental && this.state.recurring) {
+      this.setState(prevState => ({ eventType: null }));
+    } else {
+      let et = this.state.incidental ? "incidental" : "recurring";
+      this.setState(prevState => ({ eventType: et }));
+    }
+  };
+  onIncidentals = () => {
+    console.log("onIncidentals");
+    console.log(this.state.incidental);
+    this.setState(prevState => ({ incidental: !prevState.incidental }));
+    console.log(this.state.incidental);
+
+    this.updateEventType();
+  };
+  onRecurrings = () => {
+    console.log("onRecurrings");
+    console.log(this.state.recurring);
+    this.setState(prevState => ({ recurring: !prevState.recurring }));
+    console.log(this.state.recurring);
+    this.updateEventType();
+  };
+  filterRecurIncident = rows => {
+    console.log("filterRecurIncident f et:" + this.state.eventType);
+    if (!this.state.eventType || this.state.eventType == "all") {
+      return rows;
+    }
+    const etypes = this.props.eTypes;
+    const check = et => {
+      if (!et) {
+        return null;
+      }
+      try {
+        //  console.log(R.prop("type", R.find(x => x.name == et, etypes)));
+        return R.prop("type", R.find(x => x.name == et, etypes));
+      } catch (e) {
+        console.log("CATCH " + e.message);
+        return null;
+      }
+    };
+    console.log("this.state.eventType " + this.state.eventType);
+    return R.filter(x => check(x.eventType) == this.state.eventType, rows);
+  };
+  onRadio = (event, value) => {
+    console.log(value);
+    this.setState(prevState => ({ eventType: value }));
+  };
+
   render() {
     return (
       <div>
         {this.props.rows ? (
           <div>
-            <RaisedButton
-              label={"NEW GE:  GO TO 2"}
-              backgroundColor="#f58c32"
-              labelColor="#fff"
+            <span style={{ padding: "6px", fontVariant: "small-caps" }}>
+              FILTER:
+              <RadioButtonGroup
+                name="f"
+                defaultSelected="all"
+                onChange={this.onRadio}
+                style={{ display: "flex" }}
+              >
+                <RadioButton value="all" label="All gift events" />
+                <RadioButton
+                  value="incidental"
+                  label="Incidental gift events"
+                />
+                <RadioButton value="recurring" label="Recurring gift events" />
+              </RadioButtonGroup>
+            </span>
+            <div
               onClick={() => this.onNew()}
-              buttonStyle={{ borderRadius: "25px" }}
-              style={{ backgroundColor: "#ad9999" }}
-            />
+              style={{
+                backgroundColor: "#f58c32",
+                color: "white",
+                borderRadius: "4px",
+                padding: "4px",
+                margin: "4px",
+                cursor: "pointer",
+                width: "200px"
+              }}
+            >
+              <span style={{ padding: "6px", fontVariant: "small-caps" }}>
+                Gift event
+              </span>
+              <CircleAdd color="#fff" />
+            </div>
             <Table
               columns={
                 !this.props.submittable
@@ -155,8 +238,10 @@ class TableContainer extends Component {
               }
               rows={
                 this.state.bPaginated
-                  ? this.sortByCol(this.paginateRows(this.props.rows))
-                  : this.sortByCol(this.props.rows)
+                  ? this.filterRecurIncident(
+                      this.sortByCol(this.paginateRows(this.props.rows))
+                    )
+                  : this.filterRecurIncident(this.sortByCol(this.props.rows))
               }
               rollOverColor="#9ccc65"
               stripeRows={true}
@@ -347,21 +432,17 @@ const sortByTimestamp = rows => {
   const createdSort = R.sortWith([R.descend(R.prop("createdTimestamp"))]);
   return createdSort(rows);
 };
+
 const mapStateToProps = (state, ownProps) => ({
-  //  node: state.glogInput.node ? state.glogInput.node : null,
-  //  people: state.glogInput.people ? state.glogInput.people : null,
-  //  groups: state.glogInput.groups ? state.glogInput.groups : null,
-  //  animals: state.glogInput.animals ? state.glogInput.animals : null,
-  //  orgs: state.glogInput.orgs ? state.glogInput.orgs : null,
-  //  gifts: state.glogInput.gifts ? state.glogInput.gifts : null,
-  //rows: state.glogInput.GEI_RAW ? clean2(state.glogInput.GEI_RAW) : null,
+  /* add filter by incidental/recurring */
   rows: state.giftLog.giftEvents
     ? filterByMonth(clean2(state.giftLog.giftEvents), "12")
     : null,
   totalRows: state.giftLog.giftEvents
     ? filterByMonth(clean2(state.giftLog.giftEvents), "12").length
     : null,
-  loading: state.giftLog.loading
+  loading: state.giftLog.loading,
+  eTypes: state.giftLog.eventTypes
   //  mainFilter: state.glogInput.mainFilter ? state.glogInput.mainFilter : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -375,6 +456,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   setVar: (field, val) => {
     dispatch(setVar(field, val));
+  },
+  loadConfigs: () => {
+    dispatch(loadConfigs());
   },
   setView: x => {
     //  dispatch(setView(x));

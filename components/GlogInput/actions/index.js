@@ -636,7 +636,9 @@ export const onGroupSelect = id => async (dispatch, getState) => {
   }
   if (typ == "orgs" || typ == "org") {
     result = await HTTP_GLOG.searchOrgTEST(token, strSearch);
-    result = result.SearchOrganization[0];
+    /* first one may not be root , so dont just pick first one */
+    result = R.find(x => x.uuid === id, result.SearchOrganization);
+    //result = result.SearchOrganization[0];
     result = { ...result, id: result.uuid };
     console.table(result);
     const tempOrg = groupHierarchy(
@@ -646,7 +648,9 @@ export const onGroupSelect = id => async (dispatch, getState) => {
     dispatch(groupHierarchy(processOrgOrGroupHier(result, "org", isRoot)));
   } else if (typ == "groups" || typ == "group") {
     result = await HTTP_GLOG.searchGroupTEST(token, strSearch);
-    result = result.SearchGroup[0];
+    /* first one may not be root , so dont just pick first one */
+    result = R.find(x => x.uuid === id, result.SearchGroup);
+    //  result = result.SearchGroup[0];
     result = { ...result, id: result.uuid };
     console.table(result);
     dispatch(groupHierarchy(processOrgOrGroupHier(result, "group", isRoot)));

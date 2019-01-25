@@ -77,6 +77,7 @@ const addGeneology = (person, typ, selectedUUID = null) => async (
     child: addObjChild,
     partner: addObjPartner
   };
+
   const { firstName, lastName, gender, uuid } = person;
   const generation = () => {
     let g;
@@ -89,19 +90,11 @@ const addGeneology = (person, typ, selectedUUID = null) => async (
     g = typ == "child" ? g + 1 : typ == "parent" ? g - 1 : g;
     return g;
   };
+  /*need all fields for person sent to redux */
   if (typ === "main") {
     console.log(typ);
     dispatch(
-      setVar("geneology", [
-        addObjMain(
-          firstName,
-          lastName,
-          gender,
-          uuid,
-          selectedPerson,
-          generation()
-        )
-      ])
+      setVar("geneology", [addObjMain(person, selectedPerson, generation())])
     );
     dispatch(setVar("selectedPerson", uuid));
     dispatch(setVar("mainPerson", uuid));
@@ -114,17 +107,7 @@ const addGeneology = (person, typ, selectedUUID = null) => async (
     dispatch(updateForm(selectedGeneologyRow, "geneology"));
   }
   dispatch(
-    mergeRow(
-      "geneology",
-      callF[typ](
-        firstName,
-        lastName,
-        gender,
-        uuid,
-        selectedPerson,
-        generation()
-      )
-    )
+    mergeRow("geneology", callF[typ](person, selectedPerson, generation()))
   );
   console.log("end");
 };
@@ -247,8 +230,13 @@ export const deleteRequest = id => async (dispatch, getState) => {
 
 export const searchPerson = (str = "") => async (dispatch, getState) => {
   console.log("ACTION searchPerson " + str);
-
   console.log("str length " + str.length);
+  if (str == "") {
+    return;
+  }
+  if (str.length < 3) {
+    return;
+  }
   const token = getState().notifications.token;
   let newSearch = await HTTP_GIFT_LOG.searchPerson(token, str);
   console.table(newSearch);
@@ -259,7 +247,7 @@ export const searchText = arr => ({
   type: GIFT_LOG_SEARCH,
   payload: arr
 });
-
+/*
 export const sendData2 = () => ({
   type: GIFT_LOG_ADD_ROWS,
   payload: data,
@@ -269,6 +257,7 @@ export const sendData = () => async (dispatch, getState) => {
   dispatch(setVar("selectedPerson", `45fe78d5-1229-4ff1-aad5-c6f6dc814fe2`));
   dispatch(sendData2());
 };
+*/
 
 export const saveForm = (obj, ky) => ({
   type: GIFT_LOG_SAVE_FORM,
@@ -288,6 +277,7 @@ export const updateGiftEvent = obj => ({
 
 const loadGiftEvent = (id, obj = null) => async (dispatch, getState) => {
   const token = getState().notifications.token;
+  console.log("giftevent uuid " + id);
   const ge = await HTTP_GIFT_LOG.getGiftEvent(token, id);
   console.table(ge.GiftEvent);
   dispatch(updateGiftEvent(ge.GiftEvent, "giftEvents"));
@@ -346,10 +336,12 @@ export const saveFormGE = (payload, ky) => async (dispatch, getState) => {
 export const saveFormRequest = payload => async (dispatch, getState) => {
   let newPayload, gr;
   console.log("ACTION saveFormRequest f");
+  console.table(payload);
   const token = getState().notifications.token;
   const currentGiftEvent = getState().giftLog.currentGiftEvent;
   const currentGiftRequest = getState().giftLog.currentGiftRequest;
   if (!currentGiftRequest) {
+    console.log("!currentGiftRequest");
     gr = await HTTP_GIFT_LOG.createGiftRequest(token, payload);
     let id = R.prop("uuid", gr.CreateGiftRequest);
     dispatch(setVar("currentGiftRequest", R.prop("uuid", id)));
@@ -359,15 +351,14 @@ export const saveFormRequest = payload => async (dispatch, getState) => {
       id
     );
   } else {
+    console.log("is currentGiftRequest");
     gr = await HTTP_GIFT_LOG.updateGiftRequest(
       token,
       currentGiftRequest,
-      payload
+      R.pick(["requestNotes", "active", "registryStatus"], payload)
     );
-    //newPayload = { ...payload, uuid: currentGiftRequest };
-    //  dispatch(updateForm(newPayload, ky));
   }
-
+  console.log("currentGiftevent1 " + currentGiftEvent);
   dispatch(loadGiftEvent(currentGiftEvent));
 };
 
@@ -376,13 +367,40 @@ export const assocRecipientRequest = recipientID => async (
   getState
 ) => {
   console.log("ACTION assocRecipientRequest " + recipientID);
+  //  let test = getState().giftLog.getCurrentRequestPersons();
+  let c;
   const token = getState().notifications.token;
   const currentGiftRequest = getState().giftLog.currentGiftRequest;
-  let c = HTTP_GIFT_LOG.createGiftRequestPerson(
-    token,
-    currentGiftRequest,
-    recipientID
+  const currentGiftEvent = getState().giftLog.currentGiftEvent;
+  const objGE = R.find(
+    x => x.uuid === currentGiftEvent,
+    getState().giftLog.giftEvents
   );
+  console.table(objGE);
+  const objGR = R.find(
+    x => x.uuid === currentGiftRequest,
+    objGE.eventGiftRequests
+  );
+  console.table(objGR);
+  const uuidsGR = R.map(x => x.uuid, objGR.requestPersons);
+  console.table(uuidsGR);
+  const contains = R.contains(recipientID, uuidsGR);
+  if (!contains) {
+    c = HTTP_GIFT_LOG.createGiftRequestPerson(
+      token,
+      currentGiftRequest,
+      recipientID
+    );
+  } else {
+    c = HTTP_GIFT_LOG.removeGiftRequestPerson(
+      token,
+      currentGiftRequest,
+      recipientID
+    );
+  }
+
+  console.log("currentGiftevent2 " + currentGiftEvent);
+  dispatch(loadGiftEvent(currentGiftEvent));
 };
 
 export const loadConfigs = () => async (dispatch, getState) => {
@@ -393,8 +411,14 @@ export const loadConfigs = () => async (dispatch, getState) => {
   try {
     let re = R.find(x => x.name == "Recurring Events", enums);
     let ie = R.find(x => x.name == "Incidental Events", enums);
-    let etValues = [...re.metaValues, ...ie.metaValues];
-    console.table(etValues);
+    const addEnumType = (rows, typ) => {
+      const makeRow = row => ({ ...row, type: typ });
+      return R.map(row => makeRow(row), rows);
+    };
+    let etValues = [
+      ...addEnumType(re.metaValues, "recurring"),
+      ...addEnumType(ie.metaValues, "incidental")
+    ];
     dispatch(setConfig("eventTypes", etValues));
   } catch (e) {
     console.log("NO EVENT ENUM...try RECURRING/INCIDENDTAL ENUM");

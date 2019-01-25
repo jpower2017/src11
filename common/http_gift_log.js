@@ -132,26 +132,74 @@ export const getPerson = (jwt, personUUID) => {
       Person(personUUID:$personUUID){
         uuid,
         firstName,
+        middleName,
         lastName,
+        personalMobile,
+        personalEmail,
+        alternateEmail,
         gender,
+        birthDate,
+        birthSurname,
+        legalFirstName,
+        legalLastName,
+        suffix,
+        prefix,
+        notes,
+        deathDate,
         parents{
           uuid,
           firstName,
+          middleName,
           lastName,
-          gender
+          personalMobile,
+          personalEmail,
+          alternateEmail,
+          gender,
+          birthDate,
+          birthSurname,
+          legalFirstName,
+          legalLastName,
+          suffix,
+          prefix,
+          notes,
+          deathDate
         },
         children{
           uuid,
           firstName,
+          middleName,
           lastName,
-          gender
+          personalMobile,
+          personalEmail,
+          alternateEmail,
+          gender,
+          birthDate,
+          birthSurname,
+          legalFirstName,
+          legalLastName,
+          suffix,
+          prefix,
+          notes,
+          deathDate
         },
         partners{
           person{
             uuid,
             firstName,
+            middleName,
             lastName,
-            gender
+            personalMobile,
+            personalEmail,
+            alternateEmail,
+            gender,
+            birthDate,
+            birthSurname,
+            legalFirstName,
+            legalLastName,
+            suffix,
+            prefix,
+            notes,
+            deathDate
          }
         }
       }
@@ -407,6 +455,29 @@ export const createGiftRequestPerson = (jwt, requestID, personID) => {
         CreateGiftRequestPerson( giftRequestUUID:$giftRequestUUID,personUUID:$personUUID) {
                    uuid
       }
+    }
+    `;
+  const variables = {
+    giftRequestUUID: requestID,
+    personUUID: personID
+  };
+  const apolloFetch = createApolloFetch({ uri });
+  apolloFetch.use(({ request, options }, next) => {
+    if (!options.headers) {
+      options.headers = {}; // Create the headers object if needed.
+    }
+    options.headers["x-auth-jwt"] = jwt;
+    options.credentials = "include";
+    next();
+  });
+  return apolloFetch({ query, variables }).then(res => res.data);
+};
+
+export const removeGiftRequestPerson = (jwt, requestID, personID) => {
+  console.log("HTTP removeGiftRequestPerson " + [requestID, personID]);
+  const query = `
+       mutation removeGiftRequestPerson($giftRequestUUID:String,$personUUID:String) {
+        RemoveGiftRequestPerson( giftRequestUUID:$giftRequestUUID,personUUID:$personUUID)
     }
     `;
   const variables = {

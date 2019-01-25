@@ -34,6 +34,7 @@ class Header extends React.Component {
               sortable={d.type !== "component" ? this.props.sortable : false}
               onSortFunc={this.sortin}
               bSelected={this.state.selectedHeader == d.name}
+              cellWidth={this.props.cellWidth}
             />
           ))}
         </div>

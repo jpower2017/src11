@@ -47,12 +47,13 @@ export default class ListRow extends React.Component {
     this.setState({ iconClick: !this.state.iconClick });
     this.props.onselect(this.props.data.uuid, this.props.data);
   }
-  getIndent(n, hasChildren) {
-    if (!hasChildren && !n) {
-      return `20px`;
+  getIndent(generation) {
+    if (generation !== 3) {
+      let indent = 20;
+      return `${indent}px`;
+    } else {
+      return `0px`;
     }
-    let indent = hasChildren ? n * 20 : n * 20 + 40;
-    return `${indent}px`;
   }
   handleExpand(id) {
     console.log("handleExpand " + id);
@@ -109,10 +110,7 @@ export default class ListRow extends React.Component {
         >
           <div
             style={{
-              marginLeft: this.getIndent(
-                this.props.data.level,
-                this.props.data.hasChildren
-              ),
+              marginLeft: this.getIndent(this.props.data.generation),
               display: "flex",
               alignItems: "center",
               flexWrap: "nowrap"

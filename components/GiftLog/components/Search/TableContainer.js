@@ -142,7 +142,7 @@ class TableContainer extends Component {
             onselect={this.props.onselected}
           />
         ) : (
-          <div style={{ marginLeft: "200px" }}>Search results here.</div>
+          <div style={{ marginLeft: "200px" }}>No results.</div>
         )}
       </div>
     );

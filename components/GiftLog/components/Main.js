@@ -7,6 +7,7 @@ import GiftEvent from "./GiftEvent";
 import GeneologyContainer from "./GeneologyContainer";
 import GiftRequests from "./GiftRequests";
 import SummaryContainer from "./Form/SummaryContainer";
+import { setVar } from "../actions";
 
 class Main extends Component {
   constructor(props) {
@@ -18,26 +19,26 @@ class Main extends Component {
           id: 1,
           component: (
             <ListView
-              title="List of gift events"
+              title="List screen"
               onNew={() => this.setState({ screen: 2 })}
               onEdit={() => this.setState({ screen: 2 })}
             />
           )
         },
-        { id: 2, component: <GiftEvent title="Gift Event title" /> },
-        { id: 3, component: <GeneologyContainer title="Geneology title" /> },
+        { id: 2, component: <GiftEvent title="Gift Event screen" /> },
+        { id: 3, component: <GeneologyContainer title="Geneology screen" /> },
         {
           id: 4,
-          component: <GiftRequests title="Gift Requests title" />
+          component: <GiftRequests title="Gift Requests screen" />
         },
         {
           id: 5,
           component: (
             <SummaryContainer
-              title="Summary title"
+              title="Summary screen"
               onDone={() => this.setState({ screen: 1 })}
               onEdit={() => this.setState({ screen: 2 })}
-              onAddRequest={() => this.setState({ screen: 4 })}
+              onAddRequest={() => this.addRequest()}
             />
           )
         }
@@ -45,6 +46,12 @@ class Main extends Component {
     };
   }
   componentDidMount() {}
+
+  addRequest = () => {
+    console.log("Main addRequest");
+    this.props.setVar();
+    this.setState({ screen: 4 });
+  };
 
   onNew = () => {
     this.setState({ screen: 2 });
@@ -64,14 +71,21 @@ class Main extends Component {
   render() {
     return (
       <div>
+        <div
+          style={{
+            backgroundColor: "#6076A9",
+            width: "1200px",
+            color: "#fff",
+            padding: "10px"
+          }}
+        >
+          GIFT LOG
+        </div>
         <SubNav
           direction={n => this.direction(n)}
           currentScreen={this.state.screen}
           lastScreen={5}
         />
-        <div style={{ backgroundColor: "#998877", width: "1200px" }}>
-          MAIN GIFT LOG
-        </div>
         {this.getScreen()}
       </div>
     );
@@ -79,7 +93,16 @@ class Main extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({});
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  setVar: () => {
+    console.log("Main setVar");
+    dispatch(setVar("currentGiftRequest", ""));
+  }
+});
 
-const Main2 = connect(mapStateToProps)(Main);
+const Main2 = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Main);
 
 export default Main2;

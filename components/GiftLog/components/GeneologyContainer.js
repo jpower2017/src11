@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
   searchPerson,
-  sendData,
   setVar,
   addRelatives,
   parentChildRelationship,
@@ -14,9 +13,6 @@ class GeneologyContainer extends Component {
   constructor(props) {
     console.log("GeneologyContainer construct");
     super(props);
-
-    /* temporary */
-    //this.props.sendData();
   }
   componentDidMount() {}
 
@@ -28,13 +24,13 @@ class GeneologyContainer extends Component {
 
         <GeneologyScreen
           onSearchText={this.props.searchPerson}
-          sendData={this.props.sendData}
           rows={this.props.rows}
           setCurrentSelection={this.props.setCurrentSelection}
           selectedPerson={this.props.selectedPerson}
           expandSelection={this.props.expandSelection}
           parentChildRelationship={this.props.parentChildRelationship}
           partnerRelationship={this.props.partnerRelationship}
+          nResults={this.props.nResults}
         />
       </div>
     );
@@ -45,15 +41,14 @@ const mapStateToProps = (state, ownProps) => ({
   rows: state.giftLog.geneology ? state.giftLog.geneology : [],
   selectedPerson: state.giftLog.selectedPerson
     ? state.giftLog.selectedPerson
-    : null
+    : null,
+  nResults: state.giftLog.searchResults ? state.giftLog.searchResults.length : 0
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   searchPerson: str => {
     dispatch(searchPerson(str));
   },
-  sendData: () => {
-    dispatch(sendData());
-  },
+
   setCurrentSelection: uuid => {
     dispatch(setVar("selectedPerson", uuid));
   },

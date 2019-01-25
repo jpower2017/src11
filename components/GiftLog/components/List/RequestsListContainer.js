@@ -3,7 +3,7 @@ import * as R from "ramda";
 import { connect } from "react-redux";
 import List from "./List";
 import { setVar, deleteRequest } from "../../actions";
-import { getRequests } from "../../reducers";
+import { getRequests, getCurrentRequest } from "../../reducers";
 
 class RequestsListContainer extends Component {
   constructor(props) {
@@ -24,6 +24,8 @@ class RequestsListContainer extends Component {
             onselect={this.props.setVar}
             deleteable={true}
             onDelete={this.props.delete}
+            selection={[this.props.currentRequest]}
+            multiSelect={false}
           />
         ) : (
           <div>No gift requests yet.</div>
@@ -34,7 +36,8 @@ class RequestsListContainer extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  rows: getRequests(state)
+  rows: getRequests(state),
+  currentRequest: getCurrentRequest(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   setVar: (field, val) => {

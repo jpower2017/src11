@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import GeneologyComponent from "./Geneology/Geneology";
 import FieldText from "./FieldText";
 import TableContainer from "./Search/TableContainer";
+import PersonForm from "./Form/FormContainerPerson";
 
 class GeneologyScreen extends Component {
   constructor(props) {
@@ -18,8 +19,16 @@ class GeneologyScreen extends Component {
     this.setState({ filterStr: v });
     this.props.onSearchText(v);
   };
-
+  /* if results >6 scroll to see more msg*/
+  searchResultsMsg = nResults => {
+    return nResults > 6
+      ? `${nResults} results found.  Scroll to see more results.`
+      : nResults <= 6
+        ? `${nResults} results found.`
+        : "No results.  Add party.";
+  };
   render() {
+    const { nResults } = this.props;
     return (
       <div>
         <GeneologyComponent
@@ -38,12 +47,17 @@ class GeneologyScreen extends Component {
             color: "white",
             backgroundColor: "green",
             position: "absolute",
-            top: "800px"
+            top: "800px",
+            padding: "4px",
+            minWidth: "1200px"
           }}
         >
-          Search person and add to geneology
           <FieldText ontext={this.filterStr} />
+          <span style={{ marginLeft: "20px" }}>
+            {this.searchResultsMsg(nResults)}
+          </span>
           <TableContainer />
+          <PersonForm />
         </div>
       </div>
     );

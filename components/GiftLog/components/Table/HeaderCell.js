@@ -12,14 +12,16 @@ class HeaderCell extends Component {
   onclick = () => {
     this.props.onSortFunc(this.props.col);
   };
-
+  getWidth = w => {
+    return w;
+  };
   render() {
     const { sortable, data } = this.props;
     return (
       <div
         className="pointer"
         style={{
-          width: "10%",
+          width: this.getWidth(this.props.cellWidth),
           display: "flex"
           //borderBottom: "5px solid #607D8B"
           //border: "2px solid red"

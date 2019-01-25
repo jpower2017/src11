@@ -1,70 +1,40 @@
-export const addObjPartner = (
-  firstName,
-  lastName,
-  gender,
-  uuid,
-  selectedPerson,
-  generation
-) => {
+export const addObjPartner = (person, selectedPerson, generation) => {
   console.log("addObjPartner");
   return {
-    uuid: `${uuid}`,
+    ...person,
+    name: `${person.firstName} ${person.lastName}`,
     generation: generation,
-    name: `${firstName} ${lastName}`,
-    gender: gender,
     partners: [`${selectedPerson}`],
     children: []
   };
 };
-export const addObjChild = (
-  firstName,
-  lastName,
-  gender,
-  uuid,
-  selectedPerson,
-  generation
-) => {
+export const addObjChild = (person, selectedPerson, generation) => {
   console.log("addObjChild");
   return {
-    uuid: `${uuid}`,
+    ...person,
+    name: `${person.firstName} ${person.lastName}`,
     generation: generation,
-    name: `${firstName} ${lastName}`,
-    gender: gender,
     partners: [],
     children: []
   };
 };
-export const addObjParent = (
-  firstName,
-  lastName,
-  gender,
-  uuid,
-  selectedPerson,
-  generation
-) => {
+export const addObjParent = (person, selectedPerson, generation) => {
   console.log("addObjParent  ");
   return {
-    uuid: `${uuid}`,
+    ...person,
+    name: `${person.firstName} ${person.lastName}`,
     generation: generation,
-    name: `${firstName} ${lastName}`,
-    gender: gender,
     partners: [],
     children: [`${selectedPerson}`]
   };
 };
-export const addObjMain = (
-  firstName,
-  lastName,
-  gender,
-  uuid,
-  selectedPerson
-) => {
+
+export const addObjMain = (person, selectedPerson) => {
   console.log("addObjMain");
   return {
-    uuid: `${uuid}`,
+    ...person,
+    name: `${person.firstName} ${person.lastName}`,
     generation: 3,
-    name: `${firstName} ${lastName}`,
-    gender: gender,
     partners: [],
     children: []
   };

@@ -26,7 +26,11 @@ class FieldText extends Component {
       <div style={{ padding: "2px" }}>
         <TextField
           value={this.state.value}
-          hintText={this.props.hintText ? this.props.hintText : "Search here"}
+          hintText={
+            this.props.hintText
+              ? this.props.hintText
+              : "Search person and add to geneology."
+          }
           floatingLabelText={obj ? obj.title : null}
           fullWidth={false}
           multiLine={false}

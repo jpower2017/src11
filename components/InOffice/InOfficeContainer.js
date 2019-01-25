@@ -7,7 +7,14 @@ import { Log, LogTable, getEndPoints } from "../../utils/utils";
 //import { data } from "./data";
 
 const filterBroomfield = rows => {
-  return R.filter(x => x.presenceToken, rows);
+  try {
+    return R.filter(x => x.presenceToken, rows);
+  } catch (e) {
+    console.log(
+      "%cCATCH   NO PRESENCE TOKEN but role Presence Viewer Submitter,Presence app wont work",
+      "color: red"
+    );
+  }
 };
 class InOfficeContainer extends Component {
   constructor(props) {
@@ -90,7 +97,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   }
 });
 
-const InOfficeContainer2 = connect(mapStateToProps, mapDispatchToProps)(
-  InOfficeContainer
-);
+const InOfficeContainer2 = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(InOfficeContainer);
 export default InOfficeContainer2;

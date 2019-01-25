@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
 import { saveFormGE, loadConfigs, setVar } from "../../actions";
-import { getCurrentGiftEvent } from "../../reducers";
+import { getSelectedPerson } from "../../reducers";
 
 import Form from "./Form";
 import {
-  fieldsGiftEvent,
+  fieldsPerson,
   registryStatuses,
   activeStatuses,
   recurringStatuses
@@ -47,7 +47,7 @@ class FormContainerGiftEvent extends Component {
     );
     return rows2;
   }
-
+  /*
   addToForm = formObj => {
     console.log("addToForm f " + JSON.stringify(formObj));
     let newObj;
@@ -88,6 +88,7 @@ class FormContainerGiftEvent extends Component {
     { name: "registryStatus", value: registryStatuses },
     { name: "active", value: activeStatuses }
   ];
+  */
   //
   convertBools = (obj, fields) => {
     console.log("convertBools f");
@@ -113,26 +114,31 @@ class FormContainerGiftEvent extends Component {
   save = obj => {
     console.log("FCGE save f");
     console.table(obj);
-    let newObj = this.addToForm(obj);
-    newObj = this.convertBools(newObj, fieldsGiftEvent);
+    let newObj;
+    //newObj = this.addToForm(obj);
+    //newObj = this.convertBools(newObj, fieldsGiftEvent);
     console.table(newObj);
-    const fieldsGE = R.map(x => x.name, fieldsGiftEvent);
-    console.log(JSON.stringify(fieldsGE));
+
+    const fieldsGE = R.map(x => x.name, fieldsPerson);
+
     newObj = R.pick(fieldsGE, newObj);
     console.table(newObj);
     this.props.saveForm(newObj);
   };
-
+  showNew = () => {
+    console.log("FCGE show new");
+    console.log(R.isEmpty(this.props.giftEvent));
+    return R.isEmpty(this.props.giftEvent) ? false : true;
+  };
   render() {
     return (
       <div>
-        {this.props.giftEventTypes && (
+        {this.props.selectedPerson && (
           <Form
-            fields={this.addOptions(fieldsGiftEvent)}
-            data={this.props.giftEvent ? this.props.giftEvent : []}
+            fields={fieldsPerson}
+            data={this.props.selectedPerson ? this.props.selectedPerson : []}
             onSave={this.save}
-            giftEventTypes={this.props.giftEventTypes}
-            formGiftEvent={true}
+            showNew={this.showNew()}
             onNew={this.props.setVar}
           />
         )}
@@ -141,15 +147,9 @@ class FormContainerGiftEvent extends Component {
   }
 }
 
-const numValToTitle = obj => {
-  //kv
-  //if obj.field contains kv, then Check
-  //if value is number, convert to title
-};
-
 const mapStateToProps = (state, ownProps) => ({
-  giftEventTypes: state.giftLog.eventTypes ? state.giftLog.eventTypes : null,
-  giftEvent: state.giftLog.currentGiftEvent ? getCurrentGiftEvent(state) : []
+  //giftEventTypes: state.giftLog.eventTypes ? state.giftLog.eventTypes : null,
+  selectedPerson: getSelectedPerson(state)
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -161,7 +161,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   setVar: () => {
     console.log("FCGE setVar");
-    dispatch(setVar("currentGiftEvent", null));
+    dispatch(setVar("currentGiftRequest", ""));
   }
 });
 

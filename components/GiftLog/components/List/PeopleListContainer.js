@@ -3,6 +3,7 @@ import * as R from "ramda";
 import { connect } from "react-redux";
 import List from "./List";
 import { assocRecipientRequest } from "../../actions";
+import { getCurrentRequestPersons } from "../../reducers";
 
 class ListContainer extends Component {
   constructor(props) {
@@ -21,6 +22,8 @@ class ListContainer extends Component {
             data={this.props.rows}
             title="Geneology people"
             onselect={this.props.onselect}
+            selection={this.props.requestPersons}
+            multiSelect={true}
           />
         )}
       </div>
@@ -28,66 +31,40 @@ class ListContainer extends Component {
   }
 }
 
-/*
-const createRequestList = data => {
-  const main = 1;
-  const id = 1;
-
-  const getMain = () => {
-    return R.filter(x => x.id === main, data);
-  };
-  const getOthers = relation => {
-    console.table(data);
-    const id = main;
-    let a = R.find(x => x.id === id, data);
-    let rowProp = R.prop(relation, a);
-    return R.filter(x => R.contains(x.id, rowProp), data);
-  };
-  let list = [];
-  list.push({
-    ...getOthers("partners")[0],
-    relation: "partner"
-  });
-
-  R.map(x => list.push({ ...x, relation: "child" }), getOthers("children"));
-  list = R.filter(x => x.id, list);
-  return list;
-};
-const sortByAnchors = rows =>{
-  let a=[];
-  let gen3Rows = R.filter(x=>x.g==3,rows)
-  const process = row =>{
-    a.push(row)
-    R.map(x=> a.push(x) ,R.filter(x=>R.contains(row.id,x.children) , rows))
-    let childRows = R.filter(x=>R.contains( x.id ,row.children)  ,rows)
-    R.map(x=> a.push(x) ,childRows)
-  }
-  R.map(process, gen3Rows)
-  return a
-}
-*/
-const sortByAnchors = rows => {
-  console.table(rows);
-  let a = [];
-  let gen3Rows = R.filter(x => x.generation == 3, rows);
+const sortByAnchors = (rows, gen) => {
+  const groups = [];
+  let genRows = R.filter(x => x.generation == gen, rows);
   const process = row => {
-    console.table(row);
+    let a = [];
     a.push(row);
     R.map(
       x => a.push(x),
       R.filter(x => R.contains(row.uuid, x.children), rows)
     );
+    const parents = R.filter(x => R.contains(row.uuid, x.children), rows);
+    const gran = R.map(
+      x => R.filter(y => R.contains(x.uuid, y.children), rows),
+      parents
+    );
+    R.map(x => a.push(x), gran);
     let childRows = R.filter(x => R.contains(x.uuid, row.children), rows);
     R.map(x => a.push(x), childRows);
-    console.log(a.toString());
+    const grandKids = R.map(
+      x => R.filter(y => R.contains(y.uuid, x.children), rows),
+      childRows
+    );
+    R.map(x => a.push(x), grandKids);
+    groups.push(a);
   };
-  R.map(process, gen3Rows);
-  console.table(a);
-  return a;
+  R.map(process, genRows);
+  return R.flatten(groups);
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  rows: state.giftLog.geneology ? sortByAnchors(state.giftLog.geneology) : null
+  rows: state.giftLog.geneology
+    ? sortByAnchors(state.giftLog.geneology, 3)
+    : null,
+  requestPersons: getCurrentRequestPersons(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onselect: (recipientID, obj) => {

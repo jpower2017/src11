@@ -127,11 +127,15 @@ export const giftLog = (state = [], action) => {
       console.log("REDUCER uuid " + uuid);
       otherRows = R.filter(x => x.uuid !== uuid, state[action.name]);
       newRows = [...otherRows, action.payload];
-      console.log("state.mainperson " + state.mainPerson);
-      mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
-      newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
-      console.table(newRows);
-      console.table(R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]));
+      try {
+        console.log("state.mainperson " + state.mainPerson);
+        mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
+        newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
+        console.table(newRows);
+        console.table(R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]));
+      } catch (e) {
+        console.log(e.mesage);
+      }
       return {
         ...state,
         [action.name]: newRows
@@ -157,48 +161,118 @@ export const giftLog = (state = [], action) => {
 ///////////////////////////////////////////////////////////////////////////////
 export const getRequests = state => {
   console.log("REDUCER getRequests");
-  console.table(state);
-  console.table(state.giftLog);
-  const appData = state.giftLog;
-  console.log(appData.currentGiftEvent);
-  console.table(appData.giftEvents);
-  console.table(
-    R.find(x => x.uuid == appData.currentGiftEvent, appData.giftEvents)
-  );
-  let ge = R.find(x => x.uuid == appData.currentGiftEvent, appData.giftEvents);
-  console.table(ge.eventGiftRequests);
-  return ge.eventGiftRequests;
+  try {
+    const appData = state.giftLog;
+    let ge = R.find(
+      x => x.uuid == appData.currentGiftEvent,
+      appData.giftEvents
+    );
+    console.table(ge.eventGiftRequests);
+    return ge.eventGiftRequests;
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
 };
 export const getCurrentGiftEvent = state => {
   console.log("REDUCER getCurrentGiftEvent");
-  console.table(state);
   console.table(state.giftLog);
   const appData = state.giftLog;
-  if (!appData.currentGiftEvent) {
-    return {};
+  try {
+    if (!appData.currentGiftEvent) {
+      console.log("!currentGiftEvent return empty {}");
+      return {};
+    }
+    let ge = R.find(
+      x => x.uuid == appData.currentGiftEvent,
+      appData.giftEvents
+    );
+    console.log("ge " + JSON.stringify(ge));
+    return ge;
+  } catch (e) {
+    console.log("CATCH " + e.message);
   }
-  let ge = R.find(x => x.uuid == appData.currentGiftEvent, appData.giftEvents);
-  return ge;
 };
+export const bIncidentalOrRecurring = state => {
+  console.log("bIncidentalOrRecurring");
+  const ge = getCurrentGiftEvent(state);
+  const etypes = state.giftLog.eventTypes;
+  const etypeRow = R.find(x => x.value === ge.eventType, etypes);
+  return etypeRow.type;
+};
+
 export const getCurrentRequest = state => {
   console.log("REDUCER getCurrentRequest");
   const appData = state.giftLog;
-  console.log(appData.currentGiftEvent);
-  console.log(appData.currentGiftRequest);
   if (!appData.currentGiftRequest) {
+    console.log("NOT currentGiftrequest");
     return [];
   }
-  console.table(
-    R.find(x => x.uuid == appData.currentGiftEvent, appData.giftEvents)
-  );
-  let ge = R.find(x => x.uuid == appData.currentGiftEvent, appData.giftEvents);
-  console.log(
-    JSON.stringify(
-      R.find(x => x.uuid == appData.currentGiftRequest, ge.eventGiftRequests)
-    )
-  );
-  return R.find(
-    x => x.uuid == appData.currentGiftRequest,
-    ge.eventGiftRequests
-  );
+  try {
+    let ge = R.find(
+      x => x.uuid == appData.currentGiftEvent,
+      appData.giftEvents
+    );
+    console.log(
+      JSON.stringify(
+        R.find(x => x.uuid == appData.currentGiftRequest, ge.eventGiftRequests)
+      )
+    );
+    return R.find(
+      x => x.uuid == appData.currentGiftRequest,
+      ge.eventGiftRequests
+    );
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
 };
+
+export const getCurrentRequestPersons = state => {
+  console.log("REDUCER getCurrentRequestPersons");
+  try {
+    const appData = state.giftLog;
+    const giftReq = getCurrentRequest(state);
+    const requestPersons = R.prop("requestPersons", giftReq);
+    console.table(requestPersons);
+    return requestPersons;
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+};
+export const getSelectedPerson = state => {
+  console.log("REDUCER getSelectedPerson");
+  try {
+    //const objPerson = state.giftLog.geneology[state.giftLog.selectedPerson];
+    const objPerson = R.find(
+      x => x.uuid === state.giftLog.selectedPerson,
+      state.giftLog.geneology
+    );
+    console.table(objPerson);
+    return objPerson;
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+};
+/*
+export const filterEventType = (state, eventType, rows) => {
+  console.table(rows);
+
+  const data = state.giftLog;
+  const etypes = state.giftLog.eventTypes;
+  console.table(etypes);
+  const check = et => {
+    console.log(et);
+    if (!et) {
+      return null;
+    }
+    try {
+      console.log(R.prop("type", R.find(x => x.name == et, etypes)));
+      return R.prop("type", R.find(x => x.name == et, etypes));
+    } catch (e) {
+      console.log("CATCH " + e.message);
+      return null;
+    }
+  };
+
+  return R.filter(x => check(x.eventType) == eventType, rows);
+};
+*/

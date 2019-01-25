@@ -25,7 +25,7 @@ export default class List extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: [],
+      selected: this.props.selection,
       multiSelect: this.props.multiSelect,
       data: this.props.data
     };
@@ -45,7 +45,7 @@ export default class List extends Component {
   }
   componentWillReceiveProps(nextProps) {
     console.log("Row componentWillReceiveProps " + JSON.stringify(nextProps));
-    this.setState({ data: nextProps.data });
+    this.setState({ data: nextProps.data, selected: nextProps.selection });
   }
   onselect(x, obj) {
     console.log("onselect x,obj " + x + " " + JSON.stringify(obj));
@@ -63,32 +63,17 @@ export default class List extends Component {
 
     this.props.onselect(x, obj);
   }
-  bHighlight = (id, selected, objRequest, requestID, field = "recipients") => {
-    console.log(
-      "bHighlight " + [id, selected, requestID, JSON.stringify(objRequest)]
-    );
 
-    let show = "";
-    if (requestID === id) {
-      return true;
+  bHighlight = uuid => {
+    let show = false;
+    try {
+      console.table(this.state.selected);
+      const arr = R.map(x => x.uuid, this.state.selected);
+      console.log(JSON.stringify(arr));
+      show = R.contains(uuid, arr);
+    } catch (e) {
+      console.log("CATCH " + e.message);
     }
-
-    if (selected && !this.props.request) {
-      if (id == selected) {
-        return true;
-      }
-    }
-
-    if (!objRequest || !objRequest[field]) {
-      console.log(" !objRequest || !objRequest[field]");
-      return;
-    }
-    const recips = R.path([field], objRequest);
-    //  console.log("recips " + JSON.stringify(recips));
-    const arr = R.map(x => x.id, recips);
-    //console.log(JSON.stringify(arr));
-    show = R.contains(id, arr);
-
     return show;
   };
 
@@ -173,7 +158,7 @@ export default class List extends Component {
                 this.props.gift
                   ? this.bHighlight2(x.requestNotes, request)
                   : this.bHighlight(
-                      x.id,
+                      x.uuid,
                       this.state.selected,
                       request,
                       requestID,

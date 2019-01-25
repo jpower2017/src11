@@ -92,7 +92,7 @@ export default class Row extends React.Component {
               "birthSurname",
               "legalLastName",
               "suffix"
-            ]) && <Cell data={[objData[x]]} />,
+            ]) && <Cell data={[objData[x]]} width={this.props.cellWidth} />,
       ks
     );
   };
@@ -132,7 +132,7 @@ export default class Row extends React.Component {
     return (
       <div
         style={{
-          width: "10%",
+          width: this.props.cellWidth,
           marginLeft: "0px",
           padding: "0px 2px",
           cursor: "pointer"

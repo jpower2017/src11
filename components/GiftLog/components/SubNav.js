@@ -14,9 +14,17 @@ class SubNav extends Component {
     const { currentScreen, lastScreen } = this.props;
     return (
       <div style={{ display: "flex" }}>
-        {currentScreen > 1 && <Back onClick={() => this.props.direction(-1)} />}
+        {currentScreen > 1 && (
+          <Back
+            onClick={() => this.props.direction(-1)}
+            style={{ zoom: "300%", pointer: "cursor" }}
+          />
+        )}
         {currentScreen + 1 <= lastScreen && (
-          <Forward onClick={() => this.props.direction(1)} />
+          <Forward
+            onClick={() => this.props.direction(1)}
+            style={{ zoom: "300%", pointer: "cursor" }}
+          />
         )}
       </div>
     );

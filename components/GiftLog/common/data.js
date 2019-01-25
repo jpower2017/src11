@@ -36,6 +36,33 @@ export const fieldsRequest = [
     //  options: activeStatuses
   }
 ];
+export const genderStatuses = [
+  { name: "Female", title: "Female", value: 1 },
+  { name: "Male", title: "Male", value: 2 },
+  { name: "Unknown", title: "Unknown", value: 3 }
+];
+export const fieldsPerson = [
+  { name: "firstName", title: "First name" },
+  { name: "lastName", title: "Last name" },
+  { name: "middleName", title: "Middle name" },
+  {
+    name: "gender",
+    title: "Gender",
+    uiType: "dropDown",
+    options: genderStatuses
+  },
+  { name: "birthDate", title: "Birth date (MMDDYYYY)", type: "date" },
+  { name: "personalEmail", title: "Personal email", type: "email" },
+  { name: "alternateEmail", title: "Alternate email", type: "email" },
+  { name: "personalMobile", title: "Personal mobile", type: "phone" },
+  { name: "legalFirstName", title: "Legal first name" },
+  { name: "legalLastName", title: "Legal last name" },
+  { name: "prefix", title: "Prefix" },
+  { name: "suffix", title: "Suffix" },
+  { name: "birthSurname", title: "Birth surname" },
+  { name: "notes", title: "Notes", uiType: "textArea" },
+  { name: "deathDate", title: "Date of death (MMDDYYYY)", type: "date" }
+];
 
 export const columnsPerson = [
   { name: "firstName", title: "First name", type: "string", order: 2 },

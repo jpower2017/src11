@@ -13,7 +13,7 @@ class List2 extends Component {
         <div
           style={{ backgroundColor: "green", color: "white", padding: "4px" }}
         >
-          Gift event data:
+          Gift event:
         </div>
         <div style={{ border: "1px solid green", padding: "4px" }}>
           <div>EVENT TYPE: {eventType} </div>

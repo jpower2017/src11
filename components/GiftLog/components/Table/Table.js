@@ -21,7 +21,6 @@ export default class Table extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    console.log("Table CWRP: " + nextProps.rows);
     this.setState({
       rows: nextProps.rows,
       page: 0,
@@ -104,9 +103,13 @@ export default class Table extends React.Component {
     return R.prop("color", R.find(x => x.status == status, statuses));
   };
   */
-
+  colWidth = () => {
+    let w = Number(100 / this.props.columns.length) + `%`;
+    return w;
+  };
   getRows = (data, component) => {
     const RowType = componentFromProp("type");
+
     return data.map((row, index) => (
       <RowType
         type={component}
@@ -123,12 +126,14 @@ export default class Table extends React.Component {
         onUpdate={this.props.onUpdate}
         //onselect={(uuid, typ) => console.log("uuid and type " + [uuid, typ])}
         onselect={(uuid, typ) => this.props.onselect(uuid, typ)}
+        cellWidth={this.colWidth()}
       />
     ));
   };
   onPaginated = x => {
     this.props.onPaginated(x);
   };
+
   render() {
     const {
       columns,
@@ -143,12 +148,13 @@ export default class Table extends React.Component {
     } = this.props;
 
     return (
-      <div style={{ width: "1500px" }}>
+      <div style={{ minWidth: "1200px" }}>
         <Paper zDepth={2}>
           <Header
             data={columns}
             sortable={sortable}
             onSortFunc={this.onSortFunc}
+            cellWidth={this.colWidth()}
           />
           {this.props.rowType == "RowMain" &&
             this.props.rows &&

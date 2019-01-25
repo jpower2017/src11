@@ -31,12 +31,15 @@ class Cell extends Component {
       );
     });
   };
+  getWidth = w => {
+    return w;
+  };
   render() {
     const { type, data } = this.props;
     return (
       <div
         style={{
-          width: "10%",
+          width: this.getWidth(this.props.width),
           marginLeft: "0px",
           padding: "0px 2px"
           //border: "2px solid red"
