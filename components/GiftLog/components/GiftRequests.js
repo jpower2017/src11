@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import FormContainerRequest from "./Form/FormContainerRequest";
 import GeneologyPeopleList from "./List/PeopleListContainer";
 import RequestsList from "./List/RequestsListContainer";
+import FormContainerAssignTo from "./Form/FormContainerAssignTo";
 
 class GiftRequests extends Component {
   constructor(props) {
@@ -14,8 +15,6 @@ class GiftRequests extends Component {
     const { title } = this.props;
     return (
       <div>
-        <div style={{ fontWeight: "bold" }}>{title}</div>
-
         <div style={{ display: "flex" }}>
           <FormContainerRequest />
           <div style={{ padding: "10px" }}>
@@ -23,6 +22,9 @@ class GiftRequests extends Component {
           </div>{" "}
           <div style={{ padding: "10px" }}>
             <GeneologyPeopleList />
+          </div>
+          <div style={{ padding: "10px" }}>
+            <FormContainerAssignTo />
           </div>
         </div>
       </div>

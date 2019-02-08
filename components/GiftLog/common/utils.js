@@ -29,11 +29,12 @@ export const addObjParent = (person, selectedPerson, generation) => {
   };
 };
 
+/* if group/org name overides person first and last */
 export const addObjMain = (person, selectedPerson) => {
   console.log("addObjMain");
   return {
-    ...person,
     name: `${person.firstName} ${person.lastName}`,
+    ...person,
     generation: 3,
     partners: [],
     children: []

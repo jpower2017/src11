@@ -3,7 +3,11 @@ import * as R from "ramda";
 import { connect } from "react-redux";
 import List from "./List";
 import { assocRecipientRequest } from "../../actions";
-import { getCurrentRequestPersons } from "../../reducers";
+import {
+  getCurrentRequestPersons,
+  getCurrentRequestOrganizations,
+  getCurrentRequestGroups
+} from "../../reducers";
 
 class ListContainer extends Component {
   constructor(props) {
@@ -20,9 +24,13 @@ class ListContainer extends Component {
         {this.props.rows && (
           <List
             data={this.props.rows}
-            title="Geneology people"
+            title="Gift parties"
             onselect={this.props.onselect}
-            selection={this.props.requestPersons}
+            selection={[
+              ...this.props.requestPersons,
+              ...this.props.requestOrganizations,
+              ...this.props.requestGroups
+            ]}
             multiSelect={true}
           />
         )}
@@ -32,8 +40,9 @@ class ListContainer extends Component {
 }
 
 const sortByAnchors = (rows, gen) => {
+  console.table(rows);
   const groups = [];
-  let genRows = R.filter(x => x.generation == gen, rows);
+  let genRows = R.uniq(R.filter(x => x.generation == gen, rows));
   const process = row => {
     let a = [];
     a.push(row);
@@ -57,6 +66,7 @@ const sortByAnchors = (rows, gen) => {
     groups.push(a);
   };
   R.map(process, genRows);
+  console.table(R.flatten(groups));
   return R.flatten(groups);
 };
 
@@ -64,11 +74,13 @@ const mapStateToProps = (state, ownProps) => ({
   rows: state.giftLog.geneology
     ? sortByAnchors(state.giftLog.geneology, 3)
     : null,
-  requestPersons: getCurrentRequestPersons(state)
+  requestPersons: getCurrentRequestPersons(state),
+  requestOrganizations: getCurrentRequestOrganizations(state),
+  requestGroups: getCurrentRequestGroups(state)
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onselect: (recipientID, obj) => {
-    dispatch(assocRecipientRequest(recipientID));
+    dispatch(assocRecipientRequest(recipientID, obj));
   }
   /*
   sendData: () => {

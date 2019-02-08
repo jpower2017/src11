@@ -13,7 +13,16 @@ export default class Block extends Component {
   };
 
   render() {
-    const { top, left, color, className, data, uuid, highlight } = this.props;
+    const {
+      top,
+      left,
+      color,
+      className,
+      data,
+      uuid,
+      highlight,
+      personPartyType
+    } = this.props;
     const style = { top, left, backgroundColor: color, borderRadius: "10px" };
     const orange = "#f58c32";
 
@@ -38,9 +47,11 @@ export default class Block extends Component {
               }}
               onClick={() => this.props.expand(uuid)}
             >
-              <div>
-                <Expand />
-              </div>
+              {personPartyType && (
+                <div>
+                  <Expand />
+                </div>
+              )}
             </div>
             <div
               style={{
@@ -50,11 +61,12 @@ export default class Block extends Component {
               }}
               onClick={() => this.props.attach(uuid)}
             >
-              <div>
-                <Attach />
-              </div>
+              {personPartyType && (
+                <div>
+                  <Attach />
+                </div>
+              )}
             </div>
-
             <div
               onClick={this.bubble}
               style={{
@@ -85,9 +97,11 @@ export default class Block extends Component {
               }}
               onClick={() => this.props.expand(uuid)}
             >
-              <div>
-                <Expand />
-              </div>
+              {personPartyType && (
+                <div>
+                  <Expand />
+                </div>
+              )}
             </div>
             <div style={{ width: "80%" }}>
               <strong>{data}</strong>

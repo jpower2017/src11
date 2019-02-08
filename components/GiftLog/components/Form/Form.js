@@ -15,6 +15,7 @@ import {
 //  const { eventType } = data;
 class Form extends Component {
   constructor(props) {
+    console.log("FORM construct");
     super(props);
     this.state = {
       saveEnabled: false,
@@ -188,6 +189,9 @@ class Form extends Component {
     console.log("eventType " + eventType);
     return eventType[0];
   };*/
+  getWidth = prop => {
+    return prop ? prop : "400px";
+  };
   render() {
     const { fields } = this.props;
     return (
@@ -196,7 +200,7 @@ class Form extends Component {
           style={{
             display: "flex",
             backgroundColor: "#A4AECB",
-            minWidth: "400px"
+            minWidth: this.getWidth(this.props.width)
           }}
         >
           <RaisedButton

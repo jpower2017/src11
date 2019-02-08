@@ -19,11 +19,14 @@ const dd = [
 
 class FormDelivery extends Component {
   constructor(props) {
+    console.log("FORMDELIVERY CONSTRUCT");
     super(props);
     this.state = { saveEnabled: false, showNew: false, showIntl: false };
   }
+
   componentDidMount() {
-    this.state = { data: this.props.data };
+    console.log("FORMDELIVERY COMPDIDMOUNT");
+    this.state = { data: this.props.data, location: null };
   }
   componentWillReceiveProps(nextProps) {
     console.log(" FormDelivery CWRP " + nextProps.selection);
@@ -100,6 +103,7 @@ class FormDelivery extends Component {
   changeDeliveryLoc = id => {
     console.log("FormDelivery changeDeliveryLoc id   " + id);
     this.setState({ data: { ...this.props.gift, location: id } });
+    this.setState({ location: id });
     this.props.changeDeliveryLoc(id);
   };
   changeGiftLocation = (val, name) => {
@@ -124,10 +128,12 @@ class FormDelivery extends Component {
   };
   getLocations = data => {
     console.table(data);
+    /* !!use DATA to set state */
+
     console.table(this.props.deliveryAddresses);
     let addresses = this.props.deliveryAddresses;
     return addresses;
-
+    /*
     const createAddress = obj => {
       return {
         name: obj.placeID,
@@ -135,7 +141,29 @@ class FormDelivery extends Component {
         value: obj.id
       };
     };
-    return R.map(createAddress, addresses);
+    */
+    /////////return R.map(createAddress, addresses);
+    if (data && data["location"]) {
+      console.table([
+        ...addresses,
+        {
+          name: data.location.formattedAddress[0],
+          title: data.location.formattedAddress.toString(),
+          value: data.location.uuid
+        }
+      ]);
+      return [
+        ...addresses,
+        {
+          name: data.location.formattedAddress[0],
+          title: data.location.formattedAddress.toString(),
+          value: data.location.uuid
+        }
+      ];
+    } else {
+      return addresses;
+    }
+
     /*
     if (!data.location) {
       console.log("not data.location");
@@ -160,7 +188,13 @@ class FormDelivery extends Component {
                     ? this.getLocations(data)
                     : this.state.street
                 }
-                status={data.location ? data.location.uuid : null}
+                status={
+                  data.location
+                    ? data.location.uuid
+                    : this.state.location
+                      ? this.state.location
+                      : null
+                }
                 onselect={value => this.changeDeliveryLoc(value)}
               />
             </div>

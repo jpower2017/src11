@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import { selectedRowAndType } from "../../actions";
 //import { getRows, getSelection } from "../../reducers";
 import Table from "../Table/Table";
-import { columnsPerson } from "../../common/data";
+import { columnsPerson, columnsOrg } from "../../common/data";
 
 class TableContainer extends Component {
   constructor(props) {
@@ -99,11 +99,12 @@ class TableContainer extends Component {
   };
   getColumns = node => {
     console.log("getColumns node: " + node);
-    const choices = [{ nodeName: "people", cols: columnsPerson }];
-    return R.prop("cols", R.find(x => x.nodeName === node, choices));
+
+    return node == "person" ? columnsPerson : columnsOrg;
   };
   render() {
     console.log("TC render f");
+    const { searchType } = this.props;
     return (
       <div style={{ maxHeight: "400px", overflow: "auto" }}>
         {this.props.rows && this.props.rows.length ? (
@@ -113,8 +114,8 @@ class TableContainer extends Component {
                 ? R.compose(
                     this.sortColumns,
                     this.removeSubmitColumn
-                  )(this.getColumns("people"))
-                : this.sortColumns(this.getColumns("people"))
+                  )(this.getColumns(searchType))
+                : this.sortColumns(this.getColumns(searchType))
             }
             rows={
               this.state.bPaginated
@@ -156,9 +157,9 @@ const mapStateToProps = (state, ownProps) => ({
     : 0
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onselected: (id, typ) => {
-    console.log("onselected id  " + id);
-    dispatch(selectedRowAndType(id, typ));
+  onselected: (id, typ, partyType) => {
+    console.log("onselected id  " + [id, typ, partyType]);
+    dispatch(selectedRowAndType(id, typ, partyType));
   }
 });
 

@@ -78,6 +78,8 @@ export default class Row extends React.Component {
   };
 
   renderCells = objData => {
+    console.log("ROW renderCells f");
+    console.table(objData);
     const ks = R.keys(objData);
     return R.map(
       x =>
@@ -102,7 +104,13 @@ export default class Row extends React.Component {
     const relationIcons = [
       {
         name: "main",
-        icon: <Person onClick={() => this.props.onselect(data.uuid, "main")} />
+        icon: (
+          <Person
+            onClick={() =>
+              this.props.onselect(data.uuid, "main", data.partyType)
+            }
+          />
+        )
       },
       {
         name: "parent",
@@ -142,6 +150,13 @@ export default class Row extends React.Component {
       </div>
     );
   };
+  showIcon = obj => {
+    console.log("Row showIcon");
+    console.table(R.keys(obj));
+    const b = R.contains("firstName", R.keys(obj));
+    console.log(b);
+    return b;
+  };
   render() {
     const { selectColor, color, selectable, data, rollOverColor } = this.props;
     const setColor = id => {
@@ -178,9 +193,9 @@ export default class Row extends React.Component {
         >
           {this.renderCells(data)}
           {this.renderIconButtons("main")}
-          {this.renderIconButtons("parent")}
-          {this.renderIconButtons("partner")}
-          {this.renderIconButtons("child")}
+          {this.showIcon(data) && this.renderIconButtons("parent")}
+          {this.showIcon(data) && this.renderIconButtons("partner")}
+          {this.showIcon(data) && this.renderIconButtons("child")}
         </div>
 
         <Divider />

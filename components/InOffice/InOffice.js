@@ -98,7 +98,11 @@ class InOffice extends Component {
     this.props.update(time, message, this.getSelectedUUID());
   };
   getSelectedUUID = () => {
-    return this.state.topRow["uuid"];
+    try {
+      return this.state.topRow["uuid"];
+    } catch (e) {
+      console.log("CATCH " + e.message);
+    }
   };
   handleChangeHour = (event, index, value) => {
     //console.log("HANDLECHANGE f value: " + value);
@@ -211,6 +215,9 @@ class InOffice extends Component {
   ** SHOW ROW OF USER AT TOP
   */
   showTopRow = () => {
+    if (!this.state.topRow) {
+      return;
+    }
     return (
       <div style={{ paddingLeft: "0px", paddingRight: "0px" }}>
         <Row key={100} data={this.state.topRow} />
@@ -336,7 +343,7 @@ class InOffice extends Component {
           }}
         >
           {!this.state.adminView && this.showTopRow()}
-          {!this.state.adminView && this.showUserInput()}
+          {!this.state.adminView && this.props.selfRow && this.showUserInput()}
         </div>
         {!this.state.adminView &&
           this.props.data.map((x, i) => this.showRow(x, i))}

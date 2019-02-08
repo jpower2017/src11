@@ -11,11 +11,12 @@ const filterBroomfield = rows => {
     return R.filter(x => x.presenceToken, rows);
   } catch (e) {
     console.log(
-      "%cCATCH   NO PRESENCE TOKEN but role Presence Viewer Submitter,Presence app wont work",
+      "%cCATCH   NO PRESENCE TOKEN but role Presence Viewer Submitter",
       "color: red"
     );
   }
 };
+
 class InOfficeContainer extends Component {
   constructor(props) {
     super(props);

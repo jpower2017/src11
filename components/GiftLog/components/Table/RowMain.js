@@ -70,6 +70,8 @@ export default class Row extends React.Component {
 
   renderCells = objData => {
     const ks = R.keys(objData);
+    //  console.log("keys:");
+    //  console.table(ks);
     return R.map(
       x =>
         R.contains(x, [

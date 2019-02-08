@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  searchPerson,
+  search,
   setVar,
   addRelatives,
   parentChildRelationship,
@@ -13,17 +13,24 @@ class GeneologyContainer extends Component {
   constructor(props) {
     console.log("GeneologyContainer construct");
     super(props);
+    this.state = { searchType: "person" };
   }
   componentDidMount() {}
-
+  searchType = typ => {
+    console.log("GC searchType " + typ);
+    this.setState({ searchType: typ });
+  };
+  searchText = str => {
+    console.log("searchText " + [str, this.state.searchType]);
+    this.props.search(str, this.state.searchType);
+  };
   render() {
     const { title } = this.props;
     return (
       <div>
-        <div style={{ fontWeight: "bold" }}>{title}</div>
-
         <GeneologyScreen
-          onSearchText={this.props.searchPerson}
+          onSearchText={this.searchText}
+          onSearchType={this.searchType}
           rows={this.props.rows}
           setCurrentSelection={this.props.setCurrentSelection}
           selectedPerson={this.props.selectedPerson}
@@ -45,8 +52,8 @@ const mapStateToProps = (state, ownProps) => ({
   nResults: state.giftLog.searchResults ? state.giftLog.searchResults.length : 0
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchPerson: str => {
-    dispatch(searchPerson(str));
+  search: (str, typ) => {
+    dispatch(search(str, typ));
   },
 
   setCurrentSelection: uuid => {

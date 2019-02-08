@@ -12,8 +12,6 @@ class GiftEvent extends Component {
     const { title } = this.props;
     return (
       <div>
-        <div style={{ fontWeight: "bold" }}>{title}</div>
-
         <FormContainerGiftEvent />
       </div>
     );

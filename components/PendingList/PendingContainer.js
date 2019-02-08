@@ -11,7 +11,8 @@ const data = [
   { name: "Cathy", possessive: `Cathy's`, teamWorkID: "167404", value: 3 },
   { name: "Chris", possessive: `Chris'`, teamWorkID: "168651", value: 4 },
   { name: "Dale", possessive: `Dale's`, teamWorkID: "167405", value: 5 },
-  { name: "Emily", possessive: `Emily's`, teamWorkID: "130182", value: 6 }
+  { name: "Emily", possessive: `Emily's`, teamWorkID: "130182", value: 6 },
+  { name: "Audrey", possessive: `Audrey's`, teamWorkID: "241799", value: 7 }
 ];
 class PendingContainer extends Component {
   constructor(props) {
@@ -62,8 +63,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   }
 });
 
-const PendingContainer2 = connect(mapStateToProps, mapDispatchToProps)(
-  PendingContainer
-);
+const PendingContainer2 = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PendingContainer);
 
 export default PendingContainer2;

@@ -5,13 +5,20 @@ import {
   updateSecondary,
   onTypeGift,
   addLocation,
-  changeDeliveryLoc
+  changeDeliveryLoc,
+  queryGiftEvent
 } from "../actions";
 import FormDelivery from "./FormDelivery";
 import { appLogic } from "../common/data";
 
 class FormContainer extends Component {
-  componentDidMount() {}
+  constructor(props) {
+    console.log("FORMDELIVERYCONTAINER CONSTRUCT");
+    super(props);
+  }
+  componentDidMount() {
+    this.props.queryGE(this.props.gei);
+  }
   getFields = tab => {
     let str = R.prop("fields", R.find(x => x.tab === tab, appLogic));
     return str;
@@ -39,10 +46,13 @@ class FormContainer extends Component {
 }
 
 const getDelivery = (gifts, searchID, deliveries) => {
-  console.log("getOrder");
+  console.log("getDelivery " + searchID);
   const gift = R.find(x => x.id === searchID, gifts);
   const deliveryID = R.prop("delivery", gift);
-
+  console.log("deliveryID " + deliveryID);
+  if (!deliveryID) {
+    return;
+  }
   console.table(R.find(x => x.id === deliveryID, deliveries));
   return R.find(x => x.id === deliveryID, deliveries);
 };
@@ -178,25 +188,39 @@ const mapStateToProps = (state, ownProps) => ({
     ),
     state.glogInput.deliveries,
     state.glogInput.gifts
-  )
+  ),
+  gei: state.glogInput.searchID
 
   //title: this.props.data ? "Data for item selected" : "Select item"
 });
+const test = (msg, obj) => {
+  console.log(msg);
+  console.table(obj);
+};
 const mapDispatchToProps = (dispatch, ownProps) => ({
   onSave: obj => {
+    test("FDC onSave", obj);
     dispatch(updateSecondary(obj, "deliveries"));
   },
   onSaveGiftLocation: obj => {
+    test("FDC onSaveGiftLocation", obj);
     dispatch(updateSecondary(obj, "gifts"));
   },
   onType: (payload, giftID) => {
+    test("FDC ontype", payload);
     dispatch(onTypeGift(payload, giftID));
   },
   onAdd: (payload, node, bool) => {
+    test("FDC onADD", payload);
     dispatch(addLocation(payload, node, bool));
   },
   changeDeliveryLoc: id => {
+    console.log("FDC changeDelLOC");
     dispatch(changeDeliveryLoc(id));
+  },
+  queryGE: id => {
+    console.log("FRC queryGE " + id);
+    dispatch(queryGiftEvent(id));
   }
 });
 

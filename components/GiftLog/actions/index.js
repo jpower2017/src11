@@ -58,7 +58,7 @@ const addGeneology = (person, typ, selectedUUID = null) => async (
   dispatch,
   getState
 ) => {
-  console.log("ACTION addGeneology typ " + typ);
+  console.log("ACTION addGeneology typ uuid  " + [typ, selectedUUID]);
   console.table(person);
   let selectedGeneologyRow;
   const selectedPerson = selectedUUID
@@ -90,14 +90,22 @@ const addGeneology = (person, typ, selectedUUID = null) => async (
     g = typ == "child" ? g + 1 : typ == "parent" ? g - 1 : g;
     return g;
   };
-  /*need all fields for person sent to redux */
+
   if (typ === "main") {
     console.log(typ);
     dispatch(
-      setVar("geneology", [addObjMain(person, selectedPerson, generation())])
+      saveForm(addObjMain(person, selectedPerson, generation()), "geneology")
     );
+    console.log("SET SELECTED PERSON " + uuid);
     dispatch(setVar("selectedPerson", uuid));
-    dispatch(setVar("mainPerson", uuid));
+    let arrMainPersons = [];
+    try {
+      arrMainPersons = R.uniq([...getState().giftLog.mainPersons, uuid]);
+    } catch (e) {
+      console.log("CATCH " + e.message);
+      arrMainPersons = [uuid];
+    }
+    dispatch(setVar("mainPersons", arrMainPersons));
     return;
   }
   /* handle adding child to parent.children array */
@@ -173,14 +181,48 @@ export const addRelatives = uuid => async (dispatch, getState) => {
   );
 };
 
-export const selectedRowAndType = (id, typ) => async (dispatch, getState) => {
+export const selectedRowAndType = (id, typ, partyType = "person") => async (
+  dispatch,
+  getState
+) => {
   console.log("ACTION selectedRowAndType uuid typ  " + [id, typ]);
   const token = getState().notifications.token;
   const searchResults = getState().giftLog.searchResults;
   const selectedPerson = getState().giftLog.selectedPerson;
   const selectedRow = R.find(x => x.uuid == id, searchResults);
+  const currentGiftEvent = getState().giftLog.currentGiftEvent;
+  let createMain;
+
   dispatch(addGeneology(selectedRow, typ));
   switch (typ) {
+    case "main":
+      switch (partyType) {
+        case "person":
+          createMain = await HTTP_GIFT_LOG.createGiftEventPerson(
+            token,
+            currentGiftEvent,
+            id
+          );
+          break;
+        case "group":
+          createMain = await HTTP_GIFT_LOG.createGiftEventGroup(
+            token,
+            currentGiftEvent,
+            id
+          );
+          break;
+        case "org":
+          createMain = await HTTP_GIFT_LOG.createGiftEventOrganization(
+            token,
+            currentGiftEvent,
+            id
+          );
+          break;
+      }
+
+      /* HTTP CREATEGE Group and ORg */
+      console.table(createMain);
+      break;
     case "child":
       const createChild = await HTTP_GIFT_LOG.createPersonParent(
         token,
@@ -206,8 +248,10 @@ export const selectedRowAndType = (id, typ) => async (dispatch, getState) => {
       console.table(createPartner);
       break;
   }
-  const person = await HTTP_GIFT_LOG.getPerson(token, selectedPerson);
-  console.table(person.Person);
+  if (partyType === "person") {
+    const person = await HTTP_GIFT_LOG.getPerson(token, selectedPerson);
+    console.table(person.Person);
+  }
 };
 
 export const mergeRow = (name, payload) => ({
@@ -247,6 +291,61 @@ export const searchText = arr => ({
   type: GIFT_LOG_SEARCH,
   payload: arr
 });
+
+export const searchGroupOrg = (str = "") => async (dispatch, getState) => {
+  console.log("ACTION searchGroup " + str);
+
+  if (str == "") {
+    return;
+  }
+  if (str.length < 3) {
+    return;
+  }
+  const token = getState().notifications.token;
+  let newSearchGroup = await HTTP_GIFT_LOG.searchGroup(token, str);
+  let newSearchOrg = await HTTP_GIFT_LOG.searchOrganization(token, str);
+  console.table(newSearchGroup);
+  console.table(newSearchOrg);
+
+  const combinedData = (groups, orgs) => {
+    console.log("combinedData");
+    console.log(R.isEmpty(groups));
+    console.log(R.isEmpty(orgs));
+    let data = [];
+    const addPartyType = (obj, partyType) => {
+      return { ...obj, partyType: partyType };
+    };
+    data.push(R.map(x => addPartyType(x, "group"), groups));
+    data.push(R.map(x => addPartyType(x, "org"), orgs));
+    console.table(R.flatten(data));
+    return R.flatten(data);
+  };
+
+  console.table(
+    combinedData(newSearchGroup.SearchGroup, newSearchOrg.SearchOrganization)
+  );
+  dispatch(
+    searchText(
+      combinedData(newSearchGroup.SearchGroup, newSearchOrg.SearchOrganization)
+    )
+  );
+};
+
+export const search = (str = "", searchType = "person") => async (
+  dispatch,
+  getState
+) => {
+  const node = getState().glogInput.node;
+  console.log("ACTION searc  str length : " + str.length);
+  if (str == "") {
+    return;
+  }
+  if (searchType === "person") {
+    dispatch(searchPerson(str));
+  } else if (searchType == "groupOrg") {
+    dispatch(searchGroupOrg(str));
+  }
+};
 /*
 export const sendData2 = () => ({
   type: GIFT_LOG_ADD_ROWS,
@@ -279,9 +378,30 @@ const loadGiftEvent = (id, obj = null) => async (dispatch, getState) => {
   const token = getState().notifications.token;
   console.log("giftevent uuid " + id);
   const ge = await HTTP_GIFT_LOG.getGiftEvent(token, id);
-  console.table(ge.GiftEvent);
   dispatch(updateGiftEvent(ge.GiftEvent, "giftEvents"));
+  console.table(ge.GiftEvent.eventPersons);
+  /* CLEAR OUT DUPLICATES */
+  try {
+    console.table(getState().giftLog.geneology);
+    dispatch(setVar("geneology", R.uniq(getState().giftLog.geneology)));
+    console.table(getState().giftLog.geneology);
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+  const addPartyType = (obj, partyType) => {
+    return { ...obj, partyType: partyType };
+  };
+  R.map(x => dispatch(addGeneology(x, "main")), ge.GiftEvent.eventPersons);
+  R.map(
+    x => dispatch(addGeneology(x, "main")),
+    R.map(x => addPartyType(x, "group"), ge.GiftEvent.eventGroups)
+  );
+  R.map(
+    x => dispatch(addGeneology(x, "main")),
+    R.map(x => addPartyType(x, "org"), ge.GiftEvent.eventOrganizations)
+  );
 };
+/* submit GIFTEVENT ROW */
 export const rowSubmit = (id, obj = null) => async (dispatch, getState) => {
   dispatch(loadGiftEvent(id));
   dispatch(setVar("currentGiftEvent", id));
@@ -362,13 +482,14 @@ export const saveFormRequest = payload => async (dispatch, getState) => {
   dispatch(loadGiftEvent(currentGiftEvent));
 };
 
-export const assocRecipientRequest = recipientID => async (
+export const assocRecipientRequest = (recipientID, obj) => async (
   dispatch,
   getState
 ) => {
   console.log("ACTION assocRecipientRequest " + recipientID);
+  console.table(obj);
   //  let test = getState().giftLog.getCurrentRequestPersons();
-  let c;
+  let c, contains;
   const token = getState().notifications.token;
   const currentGiftRequest = getState().giftLog.currentGiftRequest;
   const currentGiftEvent = getState().giftLog.currentGiftEvent;
@@ -381,25 +502,64 @@ export const assocRecipientRequest = recipientID => async (
     x => x.uuid === currentGiftRequest,
     objGE.eventGiftRequests
   );
-  console.table(objGR);
-  const uuidsGR = R.map(x => x.uuid, objGR.requestPersons);
-  console.table(uuidsGR);
-  const contains = R.contains(recipientID, uuidsGR);
+
+  /* if partyType is null that equals 'person */
+  //  if (R.isNil(obj.partyType)) {
+  let selectedType = !obj.hasOwnProperty("partyType")
+    ? "person"
+    : obj.partyType;
+
+  let types = [
+    {
+      name: "person",
+      create: HTTP_GIFT_LOG.createGiftRequestPerson,
+      remove: HTTP_GIFT_LOG.removeGiftRequestPerson,
+      recipientGE: "requestPersons"
+    },
+    {
+      name: "org",
+      create: HTTP_GIFT_LOG.createGiftRequestOrganization,
+      remove: HTTP_GIFT_LOG.removeGiftRequestOrganization,
+      recipientGE: "requestOrganizations"
+    },
+    {
+      name: "group",
+      create: HTTP_GIFT_LOG.createGiftRequestGroup,
+      remove: HTTP_GIFT_LOG.removeGiftRequestGroup,
+      recipientGE: "requestGroups"
+    }
+  ];
+  const findObj = name => {
+    return R.find(x => x.name === name, types);
+  };
+
+  let requestParty = R.map(
+    x => x.uuid,
+    R.prop(R.prop("recipientGE", findObj(selectedType)), objGR)
+  );
+  console.table(requestParty);
+  console.log(recipientID);
+  contains = R.contains(recipientID, requestParty);
+  const callF = (f, arg1, arg2, arg3) => {
+    f(arg1, arg2, arg3);
+  };
   if (!contains) {
-    c = HTTP_GIFT_LOG.createGiftRequestPerson(
+    console.log("notcontains");
+    callF(
+      R.prop("create", findObj(selectedType)),
       token,
       currentGiftRequest,
       recipientID
     );
   } else {
-    c = HTTP_GIFT_LOG.removeGiftRequestPerson(
+    console.log(" contains");
+    callF(
+      R.prop("remove", findObj(selectedType)),
       token,
       currentGiftRequest,
       recipientID
     );
   }
-
-  console.log("currentGiftevent2 " + currentGiftEvent);
   dispatch(loadGiftEvent(currentGiftEvent));
 };
 
@@ -458,7 +618,10 @@ export const addGiftEvents = payload => ({
   type: GIFT_LOG_ADD_GIFT_EVENTS,
   payload: payload
 });
-export const getDataForComp = (filter = "12") => async (dispatch, getState) => {
+export const getGiftEventsByMonth = (filter = "12") => async (
+  dispatch,
+  getState
+) => {
   console.log("ACTION GETDATA FOR COMP");
   let mainFilter;
   const token = getState().notifications.token;
@@ -470,6 +633,66 @@ export const getDataForComp = (filter = "12") => async (dispatch, getState) => {
   dispatch(setVar("loading", false));
   //  dispatch(saveForm(ge.GiftEvents, "giftEvents"));
   dispatch(addGiftEvents(ge.GiftEvents));
+};
+
+export const saveFormGift = payload => async (dispatch, getState) => {
+  let newPayload, gr, newItem, id;
+  console.log("ACTION saveFormGift f");
+  console.table(payload);
+
+  const token = getState().notifications.token;
+  const currentGiftEvent = getState().giftLog.currentGiftEvent;
+  const giftEvents = getState().giftLog.giftEvents;
+  console.table(giftEvents);
+  const currentGiftRequest = getState().giftLog.currentGiftRequest;
+
+  const tempJSON = {
+    value: 1,
+    description: `placeholder`,
+    giftNotes: ""
+  };
+  /* CHECK CURRENT GIFT REQUEST FOR CURRENT GIFT---HAS GIFT WITH DESCRIPTION AS PLACE HOLDER*/
+  const ge = R.find(x => x.uuid === currentGiftEvent, giftEvents);
+  console.log(currentGiftEvent);
+  console.table(ge);
+
+  /*
+  const assign = R.path(
+    ["eventGiftRequests", 0, "requestGifts", 0, "gift", "assignedTo"],
+    ge
+  );
+ */
+  const giftExists = ge => {
+    const { eventGiftRequests } = ge;
+    console.log(
+      R.prop(
+        "uuid",
+        R.find(x => x.uuid === currentGiftRequest, eventGiftRequests)
+      )
+    );
+    const gr = R.find(x => x.uuid === currentGiftRequest, eventGiftRequests);
+    const giftID = R.path(["requestGifts", 0, "gift", "uuid"], gr);
+    return giftID;
+  };
+
+  const combineObj = { ...tempJSON, ...payload };
+  console.table(combineObj);
+  console.log(giftExists(ge));
+  id = giftExists(ge);
+  if (!giftExists(ge)) {
+    newItem = await HTTP_GIFT_LOG.createGift(token, combineObj);
+    id = R.prop("uuid", newItem.CreateGift);
+    console.log("newGift uuid " + R.prop("uuid", newItem.CreateGift));
+    await HTTP_GIFT_LOG.createGiftRequestGift(token, currentGiftRequest, id, {
+      giftYear: "2019"
+    });
+    /* HACK createGift does not attach 'assignedTo'   */
+    newItem = await HTTP_GIFT_LOG.updateGift(token, id, combineObj);
+  } else {
+    newItem = await HTTP_GIFT_LOG.updateGift(token, id, combineObj);
+  }
+
+  dispatch(loadGiftEvent(currentGiftEvent));
 };
 
 /*//////////////////////////////////////////*/

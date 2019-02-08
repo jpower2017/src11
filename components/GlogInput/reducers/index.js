@@ -284,6 +284,7 @@ export const glogInput = (state = [], action) => {
           }
         ],
         searchID: null,
+        requestID: null,
         groupHierarchy: null
       };
     case GLOG_ADD_SEARCH:
@@ -487,7 +488,8 @@ export const glogInput = (state = [], action) => {
       console.log("REDUCER GLOG SUBMIT ROW action.filedId " + action.fileID);
       return {
         ...state,
-        selectedRow: action.id ? action.id : state.selectedRow
+        selectedRow: action.id ? action.id : state.selectedRow,
+        requestID: null
         //selectedFileId: action.fileId
       };
     case GLOG_SET_SEARCH_ID:

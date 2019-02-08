@@ -70,34 +70,38 @@ export default class Events extends Component {
         : 0
     );
     */
-    this.setState({
-      registryStatus:
-        nextProps.gei.registryStatus == "Yes" ||
-        nextProps.gei.registryStatus == 1
-          ? 1
-          : 2,
-      activeStatus:
-        nextProps.gei.active[0] == "True" ||
-        nextProps.gei.active == true ||
-        nextProps.gei.active[0] == 1
-          ? 1
-          : 2
-    });
-    if (nextProps.gei.notes[0] !== this.state.notes) {
-      console.log("change notes  " + nextProps.gei.notes[0]);
-      this.setState({ notes: nextProps.gei.notes[0] });
+    try {
+      this.setState({
+        registryStatus:
+          nextProps.gei.registryStatus == "Yes" ||
+          nextProps.gei.registryStatus == 1
+            ? 1
+            : 2,
+        activeStatus:
+          nextProps.gei.active[0] == "True" ||
+          nextProps.gei.active == true ||
+          nextProps.gei.active[0] == 1
+            ? 1
+            : 2
+      });
+      if (nextProps.gei.notes[0] !== this.state.notes) {
+        console.log("change notes  " + nextProps.gei.notes[0]);
+        this.setState({ notes: nextProps.gei.notes[0] });
+      }
+      this.setState({ searchText: nextProps.gei.eventType[0] });
+      if (!nextProps.giftEventTypes) {
+        return;
+      }
+      if (this.state.events) {
+        return;
+      }
+      this.state = {
+        events: R.map(x => x.name, nextProps.giftEventTypes)
+        //searchText: nextProps.gei.eventType[0]
+      };
+    } catch (e) {
+      console.log("CATCH " + e.message);
     }
-    this.setState({ searchText: nextProps.gei.eventType[0] });
-    if (!nextProps.giftEventTypes) {
-      return;
-    }
-    if (this.state.events) {
-      return;
-    }
-    this.state = {
-      events: R.map(x => x.name, nextProps.giftEventTypes)
-      //searchText: nextProps.gei.eventType[0]
-    };
   }
   handleChange = event => {
     //this.props.onTextChange(event.value, e.name)

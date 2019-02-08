@@ -292,6 +292,9 @@ export const addLocation = (payload, node, addID = true) => async (
   const locationForDelivery = { ...objDelivery, location: newPayload };
   dispatch(add2(locationForDelivery, "deliveries", false));
   dispatch(add2(payload, node, addID));
+  /* HACK 02/06/19  to get new loc to show on prev gift: call querygiftevent*/
+  const gei = getState().glogInput.selectedRow;
+  dispatch(queryGiftEvent(gei));
 };
 
 export const remove = (id, node) => ({
@@ -1127,16 +1130,18 @@ export const updateSecondary = (
       } else {
         console.log("no type 2 id is " + x);
         const hier = getState().glogInput.groupHierarchy;
-        console.table(hier);
-        const r = R.find(xa => xa.id == x, hier);
-        if (R.prop("partyType", r)) {
-          const giftPartyType = R.prop("partyType", r);
-          if (giftPartyType == "group") {
-            typ2 = "groups";
-          } else if (giftPartyType == "org") {
-            typ2 = "orgs";
-          } else if (giftPartyType == "person") {
-            typ2 = "people";
+        if (hier) {
+          console.table(hier);
+          const r = R.find(xa => xa.id == x, hier);
+          if (R.prop("partyType", r)) {
+            const giftPartyType = R.prop("partyType", r);
+            if (giftPartyType == "group") {
+              typ2 = "groups";
+            } else if (giftPartyType == "org") {
+              typ2 = "orgs";
+            } else if (giftPartyType == "person") {
+              typ2 = "people";
+            }
           }
         }
       }
@@ -1282,21 +1287,23 @@ export const changeDeliveryLoc = id => async (dispatch, getState) => {
 
   let oldUUID = R.prop("delivery", giftObj);
   const oldDeliveryRow = R.find(x => x.id == oldUUID, deliveries);
+  console.table(oldDeliveryRow);
   const oldDeliveryPlaceID = R.path(["location", "uuid"], oldDeliveryRow);
   console.table(oldDeliveryRow);
-
-  oldDeliveryRow.location = newDeliveryRow.location;
-  console.table(oldDeliveryRow);
-
-  console.log("oldDeliveryPlaceID " + oldDeliveryPlaceID);
-
-  //dispatch(update(newObj, "gifts"));
-  //change Delivery Row location
-
-  await HTTP_GLOG.removeGiftLocation(token, giftID, oldDeliveryPlaceID);
-  /* pass the delivery form data  */
-  const deliveryHTTP = R.omit(["uuid", "location", "id"], oldDeliveryRow);
-  await HTTP_GLOG.createGiftLocation(token, giftID, placeID, deliveryHTTP);
+  try {
+    oldDeliveryRow.location = newDeliveryRow.location;
+    console.table(oldDeliveryRow);
+    console.log("oldDeliveryPlaceID " + oldDeliveryPlaceID);
+    //dispatch(update(newObj, "gifts"));
+    //change Delivery Row location
+    await HTTP_GLOG.removeGiftLocation(token, giftID, oldDeliveryPlaceID);
+    /* pass the delivery form data  */
+    const deliveryHTTP = R.omit(["uuid", "location", "id"], oldDeliveryRow);
+    await HTTP_GLOG.createGiftLocation(token, giftID, placeID, deliveryHTTP);
+  } catch (e) {
+    console.log("catch, no old location");
+    await HTTP_GLOG.createGiftLocation(token, giftID, placeID, {});
+  }
 };
 /* queryGiftEvent start...*/
 export const queryGiftEvent = id => async (dispatch, getState) => {

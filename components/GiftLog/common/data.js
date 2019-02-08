@@ -76,6 +76,11 @@ export const columnsPerson = [
   { name: "addPartner", title: "Partner", type: "string", order: 10 },
   { name: "addChild", title: "Child", type: "string", order: 11 }
 ];
+export const columnsOrg = [
+  { name: "placeholder", title: "", type: "string", order: 1 },
+  { name: "name", title: "Name", type: "string", order: 2 },
+  { name: "addMain", title: "Main", type: "string", order: 3 }
+];
 
 export const statuses = [
   { status: "discovery", title: "Discovery", color: "#9FA8DA", value: 1 },
@@ -117,12 +122,37 @@ export const fieldsSummary = [
 
 export const columnsGiftEventInstance = [
   { name: "eventType", title: "EVENT", type: "string", order: 1 },
-  { name: "date", title: "DATE", type: "string", order: 2 },
-  { name: "recipients", title: "RECIPIENTS", type: "string", order: 3 },
-  { name: "registry", title: "REGISTRY STATUS", type: "string", order: 4 },
-  { name: "recurring", title: "RECURRING", type: "string", order: 5 }
+  { name: "recipients", title: "RECIPIENTS", type: "string", order: 2 },
+  { name: "date", title: "DATE", type: "string", order: 3 },
+  { name: "registry", title: "REGISTRY STATUS", type: "string", order: 4 }
 ];
 
+export const fieldsOrg = [
+  {
+    name: "name",
+    title: "Name"
+  },
+  {
+    name: "contactNumber",
+    title: "Contact number"
+  },
+  { name: "email", title: "Email" },
+  { name: "notes", title: "Notes" },
+  { name: "website", title: "Website" }
+];
+export const fieldsAnimal = [
+  { name: "name", title: "Animal name" },
+  {
+    name: "type",
+    title: "Animal type",
+    type: "string",
+    uiType: "dropDown",
+    loadConfig: true,
+    configName: "configAnimalType"
+  },
+  { name: "notes", title: "Notes" }
+];
+export const fieldsGroup = [{ name: "name", title: "Name" }];
 /*
 export const fieldsGift = [
   { name: "value", title: "Value", type: "currency", order: 1 },

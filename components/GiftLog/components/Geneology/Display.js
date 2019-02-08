@@ -27,7 +27,7 @@ class Display extends Component {
     console.table(nextProps.data);
   }
 
-  showBlock(obj, top, left, className, color = "#f30") {
+  showBlock(obj, top, left, className, color = "#f30", personPartyType) {
     return (
       <Block
         className={className}
@@ -41,6 +41,7 @@ class Display extends Component {
         highlight={this.props.selectedPerson == obj.uuid}
         attach={uuid => this.props.attach(uuid)}
         expand={uuid => this.props.expand(uuid)}
+        personPartyType={personPartyType}
       />
     );
   }
@@ -62,7 +63,8 @@ class Display extends Component {
       `${top}px`,
       `${left}px`,
       obj.uuid,
-      addGenderColor(obj)
+      addGenderColor(obj),
+      obj.partyType === "person"
     );
   };
   displayGeneration = (data, gen) => {

@@ -42,25 +42,28 @@ export const capitalizeFirstLtr = string =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 export const formatPhone = input => {
-  let str = input.replace(/[^\d]/g, "");
-  const getAreaCode = str => {
-    return `${str.substr(0, 3)}`;
-  };
-  const getPrefix = str => {
-    console.log("getPRex " + str.length);
-    if (str.length < 3) {
-      return "";
-    }
-    return `.${str.substr(3, 3)}`;
-  };
-  const getSuffix = str => {
-    if (str.length < 6) {
-      return "";
-    }
-    return `.${str.substr(6)}`;
-  };
-
-  return getAreaCode(str) + getPrefix(str) + getSuffix(str);
+  try {
+    let str = input.replace(/[^\d]/g, "");
+    const getAreaCode = str => {
+      return `${str.substr(0, 3)}`;
+    };
+    const getPrefix = str => {
+      console.log("getPRex " + str.length);
+      if (str.length < 3) {
+        return "";
+      }
+      return `.${str.substr(3, 3)}`;
+    };
+    const getSuffix = str => {
+      if (str.length < 6) {
+        return "";
+      }
+      return `.${str.substr(6)}`;
+    };
+    return getAreaCode(str) + getPrefix(str) + getSuffix(str);
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
 };
 export const formatDate = input => {
   let str = input.replace(/[^\d]/g, "");

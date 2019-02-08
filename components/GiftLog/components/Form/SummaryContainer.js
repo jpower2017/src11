@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
-import { saveForm } from "../../actions";
+import { saveFormGift } from "../../actions";
 
 import Form from "./Form";
 import { fieldsSummary } from "../../common/data";
@@ -17,7 +17,6 @@ import CircleAdd from "material-ui/svg-icons/image/control-point";
 import Edit from "material-ui/svg-icons/image/edit";
 import Search from "material-ui/svg-icons/action/search";
 
-/* to do   add array of configs from a parent wrapper */
 class FormContainerRequest extends Component {
   constructor(props) {
     super(props);
@@ -32,22 +31,41 @@ class FormContainerRequest extends Component {
     );
   }
   eventTypeMessage = typ => {
+    /* no event type message for now */
+    return;
+    /*
     return typ === "incidental"
       ? `Follow up this incidental gift event with another gift event?`
       : "Add another gift event?";
+      */
+  };
+  saveForm = obj => {
+    console.log(JSON.stringify(obj));
+    const n = R.prop("assignedTo", obj);
+    const strTitle = R.prop(
+      "title",
+      R.find(x => x.value === n, this.props.personalAssistants)
+    );
+    this.props.saveForm({ assignedTo: strTitle });
   };
   render() {
     const { title } = this.props;
     return (
       <div>
-        <div style={{ fontWeight: "bold" }}>{title}</div>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between"
           }}
         >
-          <div style={{ display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              border: "4px solid #6076A9",
+              backgroundColor: "#DF5C33",
+              width: "1212px"
+            }}
+          >
             <div>
               {this.eventTypeMessage(this.props.bIncidentalOrRecurring)}
             </div>
@@ -80,7 +98,7 @@ class FormContainerRequest extends Component {
               }}
             >
               <span style={{ padding: "4px", fontVariant: "small-caps" }}>
-                Request
+                Gift request
               </span>
               <CircleAdd color="#fff" />
               <Edit color="#fff" />
@@ -98,26 +116,23 @@ class FormContainerRequest extends Component {
               }}
             >
               <span style={{ padding: "4px", fontVariant: "small-caps" }}>
-                List
+                Gift event list
               </span>
+              <CircleAdd color="#fff" />
               <Search color="#fff" />
             </div>
           </div>
         </div>
         {this.props.giftEvent && <List2Obj data={this.props.giftEvent} />}
         {this.props.requests && <List2Array data={this.props.requests} />}
-        {this.props.personalAssistants && (
-          <Form
-            fields={this.addOptions(fieldsSummary)}
-            data={[]}
-            onSave={this.props.saveForm}
-          />
-        )}
       </div>
     );
   }
 }
-
+/*
+**  to add assigned to requests  need to get all gifts for a request and then pick first
+** gift to get ASSIGNED TO
+*/
 const mapStateToProps = (state, ownProps) => ({
   personalAssistants: state.giftLog.personalAssistants
     ? state.giftLog.personalAssistants
@@ -130,7 +145,8 @@ const mapStateToProps = (state, ownProps) => ({
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
   saveForm: obj => {
-    dispatch(saveForm(obj, "TBD"));
+    console.log(JSON.stringify(obj));
+    dispatch(saveFormGift(obj));
   }
 });
 

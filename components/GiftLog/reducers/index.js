@@ -61,10 +61,10 @@ const tweakData = obj => {
 };
 
 export const giftLog = (state = [], action) => {
-  let uuid, otherRows, origRow, newRow, newRows, mainRow;
+  let uuid, otherRows, origRow, newRow, newRows, mainRows;
   switch (action.type) {
     case GIFT_LOG_SEARCH:
-      console.log("REDUCER GIFT_LOG_SEARCH ");
+      console.log("REDUCER CASE GIFT_LOG_SEARCH ");
       console.table(action.payload);
       return {
         ...state,
@@ -72,14 +72,14 @@ export const giftLog = (state = [], action) => {
       };
 
     case GIFT_LOG_ADD_ROWS:
-      console.log("REDUCER GIFT_LOG_ADD_ROWS");
+      console.log("REDUCER CASE GIFT_LOG_ADD_ROWS");
       console.table(action.payload);
       return {
         ...state,
         [action.name]: [...action.payload]
       };
     case GIFT_LOG_MERGE_ROW:
-      console.log("REDUCER GIFT_LOG_MERGE_ROW");
+      console.log("REDUCER CASE GIFT_LOG_MERGE_ROW");
       console.table(action.payload);
       uuid = R.prop("uuid", action.payload);
       console.log("uuid " + uuid);
@@ -93,19 +93,20 @@ export const giftLog = (state = [], action) => {
 
       console.table(newRow);
       newRows = R.uniqBy(R.prop("uuid"), [newRow, ...state[action.name]]);
-      mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
-      newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
+      mainRows = R.filter(x => R.contains(x.uuid, state.mainPersons), newRows);
+      newRows = R.uniqBy(R.prop("uuid"), [...mainRows, ...newRows]);
       return {
         ...state,
         [action.name]: newRows
       };
     case GIFT_LOG_ADD_GIFT_EVENTS:
+      console.log("REDUCER CASE GIFT_LOG_ADD_GIFT_EVENTS ");
       return {
         ...state,
         giftEvents: R.uniq([...R.map(x => tweakData(x), action.payload)])
       };
     case GIFT_LOG_UPDATE_GIFT_EVENT:
-      console.log("REDUCER GIFT_LOG_UPDATE_GIFT_EVENT");
+      console.log("REDUCER CASE GIFT_LOG_UPDATE_GIFT_EVENT");
       uuid = R.prop("uuid", action.payload);
       otherRows = R.filter(x => x.uuid !== uuid, state["giftEvents"]);
       return {
@@ -114,25 +115,28 @@ export const giftLog = (state = [], action) => {
       };
 
     case GIFT_LOG_SAVE_FORM:
-      console.log("REDUCER GIFT_LOG_SAVE_FORM");
+      console.log("REDUCER CASE GIFT_LOG_SAVE_FORM");
       return {
         ...state,
         [action.name]: state[action.name]
-          ? [...state[action.name], action.payload]
+          ? R.uniqBy(R.prop("uuid"), [...state[action.name], action.payload])
           : [action.payload]
       };
     case GIFT_LOG_UPDATE_FORM:
-      console.log("REDUCER GIFT_LOG_UPDATE_FORM");
+      console.log("REDUCER CASE GIFT_LOG_UPDATE_FORM");
       uuid = R.prop("uuid", action.payload);
       console.log("REDUCER uuid " + uuid);
       otherRows = R.filter(x => x.uuid !== uuid, state[action.name]);
       newRows = [...otherRows, action.payload];
       try {
         console.log("state.mainperson " + state.mainPerson);
-        mainRow = R.find(x => x.uuid === state.mainPerson, newRows);
-        newRows = R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]);
+        mainRows = R.filter(
+          x => R.contains(x.uuid, state.mainPersons),
+          newRows
+        );
+        newRows = R.uniqBy(R.prop("uuid"), [...mainRows, ...newRows]);
         console.table(newRows);
-        console.table(R.uniqBy(R.prop("uuid"), [mainRow, ...newRows]));
+        console.table(R.uniqBy(R.prop("uuid"), [...mainRows, ...newRows]));
       } catch (e) {
         console.log(e.mesage);
       }
@@ -141,16 +145,19 @@ export const giftLog = (state = [], action) => {
         [action.name]: newRows
       };
     case SET_CONFIG_GIFT_LOG2:
+      console.log("REDUCER CASE SET_CONFIG_GIFT_LOG2");
       return {
         ...state,
         [action.name]: action.payload
       };
     case SET_VAR_GIFT_LOG2:
+      console.log("REDUCER CASE SET_VAR_GIFT_LOG2");
       return {
         ...state,
         [action.name]: action.payload
       };
     default:
+      console.log("REDUCER CASE DEFAULT");
       return {
         ...state,
         currentGiftEvent: state.currentGiftEvent ? state.currentGiftEvent : null
@@ -159,6 +166,10 @@ export const giftLog = (state = [], action) => {
 };
 /////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+/***
+ *** ADD RETURNING GIFT[0].ASSIGNEDTO TO GETREQUESTS,
+ ***  so that assigned to is in each request row
+ **/
 export const getRequests = state => {
   console.log("REDUCER getRequests");
   try {
@@ -167,6 +178,7 @@ export const getRequests = state => {
       x => x.uuid == appData.currentGiftEvent,
       appData.giftEvents
     );
+    console.table(ge);
     console.table(ge.eventGiftRequests);
     return ge.eventGiftRequests;
   } catch (e) {
@@ -193,11 +205,15 @@ export const getCurrentGiftEvent = state => {
   }
 };
 export const bIncidentalOrRecurring = state => {
-  console.log("bIncidentalOrRecurring");
-  const ge = getCurrentGiftEvent(state);
-  const etypes = state.giftLog.eventTypes;
-  const etypeRow = R.find(x => x.value === ge.eventType, etypes);
-  return etypeRow.type;
+  console.log("REDUCER bIncidentalOrRecurring");
+  try {
+    const ge = getCurrentGiftEvent(state);
+    const etypes = state.giftLog.eventTypes;
+    const etypeRow = R.find(x => x.value === ge.eventType, etypes);
+    return etypeRow.type;
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
 };
 
 export const getCurrentRequest = state => {
@@ -231,9 +247,33 @@ export const getCurrentRequestPersons = state => {
   try {
     const appData = state.giftLog;
     const giftReq = getCurrentRequest(state);
-    const requestPersons = R.prop("requestPersons", giftReq);
-    console.table(requestPersons);
-    return requestPersons;
+    return R.prop("requestPersons", giftReq)
+      ? R.prop("requestPersons", giftReq)
+      : [];
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+};
+export const getCurrentRequestOrganizations = state => {
+  console.log("REDUCER getCurrentRequestOrganizations");
+  try {
+    const appData = state.giftLog;
+    const giftReq = getCurrentRequest(state);
+    return R.prop("requestOrganizations", giftReq)
+      ? R.prop("requestOrganizations", giftReq)
+      : [];
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+};
+export const getCurrentRequestGroups = state => {
+  console.log("REDUCER getCurrentRequestGroups");
+  try {
+    const appData = state.giftLog;
+    const giftReq = getCurrentRequest(state);
+    return R.prop("requestGroups", giftReq)
+      ? R.prop("requestGroups", giftReq)
+      : [];
   } catch (e) {
     console.log("CATCH " + e.message);
   }
@@ -248,6 +288,19 @@ export const getSelectedPerson = state => {
     );
     console.table(objPerson);
     return objPerson;
+  } catch (e) {
+    console.log("CATCH " + e.message);
+  }
+};
+export const getCurrentAssignedTo = state => {
+  console.log("REDUCER  getCurrentAssignedTo");
+  try {
+    const giftReq = getCurrentRequest(state);
+    console.table(giftReq);
+    const assign = R.path(["requestGifts", 0, "gift", "assignedTo"], giftReq);
+    console.log("assign via reducer " + assign);
+
+    return { assignedTo: assign };
   } catch (e) {
     console.log("CATCH " + e.message);
   }

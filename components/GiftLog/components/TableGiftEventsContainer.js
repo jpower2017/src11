@@ -1,18 +1,17 @@
 import React, { Component } from "react";
 import * as R from "ramda";
 import { connect } from "react-redux";
-import { getDataForComp, rowSubmit, setVar, loadConfigs } from "../actions";
+import { rowSubmit, setVar, loadConfigs } from "../actions";
+
 /*import //  rowSubmit,
 //  setView,
 //setSelectedRow,
 //  queryGiftEvent
- 
+
 "../../actions";*/
 
 import Table from "./Table/Table";
 import { columnsGiftEventInstance } from "../common/data";
-import RaisedButton from "material-ui/RaisedButton";
-import CircleAdd from "material-ui/svg-icons/image/control-point";
 //import { filterEventType } from "../reducers";
 //import Checkbox from "material-ui/Checkbox";
 import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton";
@@ -37,7 +36,7 @@ class TableContainer extends Component {
   }
   componentDidMount() {
     console.log("TableContainerMain CDM");
-    this.props.getDataForComp();
+    //  this.props.getDataForComp();
   }
   componentWillRecieveProps(nextProps) {
     console.log("TC CWRP nextProps.rows " + nextProps.rows);
@@ -164,8 +163,8 @@ class TableContainer extends Component {
     this.updateEventType();
   };
   filterRecurIncident = rows => {
-    console.log("filterRecurIncident f et:" + this.state.eventType);
-    if (!this.state.eventType || this.state.eventType == "all") {
+    console.log("filterRecurIncident f et:" + this.props.eventType);
+    if (!this.props.eventType || this.props.eventType == "all") {
       return rows;
     }
     const etypes = this.props.eTypes;
@@ -181,9 +180,15 @@ class TableContainer extends Component {
         return null;
       }
     };
-    console.log("this.state.eventType " + this.state.eventType);
-    return R.filter(x => check(x.eventType) == this.state.eventType, rows);
+    console.log("this.props.eventType " + this.props.eventType);
+    const fRows = R.filter(
+      x => check(x.eventType) == this.props.eventType,
+      rows
+    );
+    console.table(fRows);
+    return R.filter(x => check(x.eventType) == this.props.eventType, rows);
   };
+
   onRadio = (event, value) => {
     console.log(value);
     this.setState(prevState => ({ eventType: value }));
@@ -192,41 +197,8 @@ class TableContainer extends Component {
   render() {
     return (
       <div>
-        {this.props.rows ? (
+        {this.props.rows && !this.props.loading ? (
           <div>
-            <span style={{ padding: "6px", fontVariant: "small-caps" }}>
-              FILTER:
-              <RadioButtonGroup
-                name="f"
-                defaultSelected="all"
-                onChange={this.onRadio}
-                style={{ display: "flex" }}
-              >
-                <RadioButton value="all" label="All gift events" />
-                <RadioButton
-                  value="incidental"
-                  label="Incidental gift events"
-                />
-                <RadioButton value="recurring" label="Recurring gift events" />
-              </RadioButtonGroup>
-            </span>
-            <div
-              onClick={() => this.onNew()}
-              style={{
-                backgroundColor: "#f58c32",
-                color: "white",
-                borderRadius: "4px",
-                padding: "4px",
-                margin: "4px",
-                cursor: "pointer",
-                width: "200px"
-              }}
-            >
-              <span style={{ padding: "6px", fontVariant: "small-caps" }}>
-                Gift event
-              </span>
-              <CircleAdd color="#fff" />
-            </div>
             <Table
               columns={
                 !this.props.submittable
@@ -264,7 +236,7 @@ class TableContainer extends Component {
             />
           </div>
         ) : (
-          <div>Loading...</div>
+          this.props.loading && <div>Loading...</div>
         )}
       </div>
     );
@@ -396,7 +368,7 @@ const clean2 = geis => {
   };
   const newObj = obj => {
     return {
-      ...R.omit(["recurring"], obj),
+      ...obj,
       id: obj.uuid ? obj.uuid : obj.id,
       date: `${obj.eventMonth}/${obj.eventDay}`,
       recipients: combineRecips(
@@ -412,12 +384,11 @@ const clean2 = geis => {
             obj.eventGroups
           )
         : [""],
-      registry: obj.registryStatus,
-      recurring: obj.recurring[0] ? "True" : "False"
+      registry: obj.registryStatus
     };
   };
   const temp = R.map(x => newObj(x), geis);
-  //  console.table(temp);
+  console.table(temp);
   return R.map(x => newObj(x), geis);
 };
 
@@ -435,9 +406,7 @@ const sortByTimestamp = rows => {
 
 const mapStateToProps = (state, ownProps) => ({
   /* add filter by incidental/recurring */
-  rows: state.giftLog.giftEvents
-    ? filterByMonth(clean2(state.giftLog.giftEvents), "12")
-    : null,
+  rows: state.giftLog.giftEvents ? clean2(state.giftLog.giftEvents) : null,
   totalRows: state.giftLog.giftEvents
     ? filterByMonth(clean2(state.giftLog.giftEvents), "12").length
     : null,
@@ -446,9 +415,6 @@ const mapStateToProps = (state, ownProps) => ({
   //  mainFilter: state.glogInput.mainFilter ? state.glogInput.mainFilter : null
 });
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  getDataForComp: x => {
-    dispatch(getDataForComp());
-  },
   onselected: (id, obj) => {
     dispatch(rowSubmit(id, obj));
     //dispatch(setSelectedRow(id));

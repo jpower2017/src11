@@ -30,6 +30,7 @@ class App extends React.Component {
       flyoutEnabled: false,
       modalOpen: true
     };
+    console.log("02/06/2019");
   }
   componentDidMount() {
     if (window.innerWidth > 1000) {

@@ -17,13 +17,35 @@ class SubNav extends Component {
         {currentScreen > 1 && (
           <Back
             onClick={() => this.props.direction(-1)}
-            style={{ zoom: "300%", pointer: "cursor" }}
+            style={{ zoom: "150%", cursor: "pointer", color: "#f58c32" }}
+          />
+        )}
+        {currentScreen === 1 && (
+          <Back
+            onClick={() => this.props.direction(-1)}
+            style={{
+              zoom: "150%",
+              pointerEvents: "none",
+              opacity: 0.4,
+              color: "#f58c32"
+            }}
           />
         )}
         {currentScreen + 1 <= lastScreen && (
           <Forward
             onClick={() => this.props.direction(1)}
-            style={{ zoom: "300%", pointer: "cursor" }}
+            style={{ zoom: "150%", cursor: "pointer", color: "#f58c32" }}
+          />
+        )}
+        {currentScreen == lastScreen && (
+          <Forward
+            onClick={() => this.props.direction(1)}
+            style={{
+              zoom: "150%",
+              pointerEvents: " none",
+              opacity: 0.4,
+              color: "#f58c32"
+            }}
           />
         )}
       </div>

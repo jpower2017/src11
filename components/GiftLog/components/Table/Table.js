@@ -125,7 +125,9 @@ export default class Table extends React.Component {
         submittable={this.props.submittable}
         onUpdate={this.props.onUpdate}
         //onselect={(uuid, typ) => console.log("uuid and type " + [uuid, typ])}
-        onselect={(uuid, typ) => this.props.onselect(uuid, typ)}
+        onselect={(uuid, typ, partyType) =>
+          this.props.onselect(uuid, typ, partyType)
+        }
         cellWidth={this.colWidth()}
       />
     ));
